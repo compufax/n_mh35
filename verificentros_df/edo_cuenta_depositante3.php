@@ -1,0 +1,540 @@
+<?php
+include ("main.php"); 
+/*** ARREGLOS ***********************************************************/
+
+$rsUsuario=mysql_db_query($base,"SELECT * FROM usuarios");
+while($Usuario=mysql_fetch_array($rsUsuario)){
+	$array_usuario[$Usuario['cve']]=$Usuario['usuario'];
+}
+
+
+$rsconductor=mysql_db_query($base,"SELECT * FROM depositantes WHERE plaza = '".$_POST['plazausuario']."'");
+while($Conductor=mysql_fetch_array($rsconductor)){
+	$array_depositante[$Conductor['cve']]=$Conductor['nombre'];
+}
+
+
+
+if($_POST['cmd']==100){
+    ob_end_clean();
+    include('../fpdf153/fpdf.php');
+	include("../numlet.php");
+	$pdf=new FPDF('P','mm','LETTER');
+	$pdf->AddPage();
+	$pdf->SetXY(20,20);
+	//$pdf->Image('images/membrete.JPG',30,3,150,15);
+	$pdf->Cell(0,10,"VEREFICENTROS",0,0,'C');
+	$pdf->Ln();
+	$pdf->Ln();
+	$pdf->Ln();
+	$pdf->SetFont('Arial','',17);
+	$pdf->Cell(0,10,"Listado de Estado de Depositantes del ".$_POST['fecha_ini']." al ".$_POST['fecha_fin'],0,0,"L");
+    $pdf->Ln();
+	$pdf->Ln();
+	$pdf->SetFont('Arial','',9);
+	$pdf->Cell(0,6,"".fechaLocal()."  ".horaLocal(),0,0,"L");
+	$pdf->Ln();
+	$pdf->Cell(84,6,"Nombre",1,0,'C');
+	$pdf->Cell(28,6,"Vales Anterior",1,0,'C');
+	$pdf->Cell(28,6,"Usados",1,0,'C');
+	$pdf->Cell(28,6,"Generados",1,0,'C');
+	$pdf->Cell(28,6,"Saldo",1,0,'C');
+	$pdf->Ln();
+	$i=0;
+	$x=0;
+	$totales=array();
+		for($i=0;$i<count($_POST['depositantes']);$i++){
+		  $select= " SELECT * FROM depositante WHERE plaza='".$_POST['plazausuario']."' AND cve='".$_POST['depositantes'][$i]."' ";
+	      $res=mysql_db_query($base,$select);
+		  $row=mysql_fetch_array($res);
+         // 
+	     // $pdf->Ln();
+			$pdf->Cell(84,6,"".$row['nombre'],1,0,'C');
+			$saldo_anterior = saldo_depositante3($row['cve'],1,0,$_POST['fecha_ini'],"");
+			$cargo = saldo_depositante3($row['cve'],2,1,$_POST['fecha_ini'],$_POST['fecha_fin']);
+			$abono = saldo_depositante3($row['cve'],2,2,$_POST['fecha_ini'],$_POST['fecha_fin']);
+			$pdf->Cell(28,6,"".number_format($saldo_anterior,2),1,0,'C');
+			$pdf->Cell(28,6,"".number_format($cargo,2),1,0,'C');
+			$pdf->Cell(28,6,"".number_format($abono,2),1,0,'C');
+			$pdf->Cell(28,6,"".number_format($saldo_anterior+$abono-$cargo,2),1,0,'C');
+			$totales[0]+=$saldo_anterior;
+			$totales[1]+=$cargo;
+			$totales[2]+=$abono;
+			$totales[3]+=$saldo_anterior+$abono-$cargo;
+			$pdf->Ln();
+			}
+			$pdf->Cell(28,6,"".$i." Registro(s)",0,0,'L');
+			$pdf->Cell(28,6,"",0,0,'');
+			$pdf->Cell(28,6,"Totales",0,0,'C');
+		foreach($totales as $v){
+			$pdf->Cell(28,6,"".number_format($v,2),0,0,'C');
+			}
+		
+	
+	$pdf->Output();
+	exit();	
+}
+if($_POST['cmd']==102){
+    include('../fpdf153/fpdf.php');
+	include("../numlet.php");
+	$pdf=new FPDF('P','mm','LETTER');
+	$pdf->AddPage();
+	$pdf->SetXY(20,20);
+	//$pdf->Image('images/membrete.JPG',30,3,150,15);
+	
+	$pdf->SetFont('Arial','',13);
+	$pdf->Cell(0,10,"VEREFICENTROS",0,0,'C');
+	$pdf->Ln();
+	
+	$i=0;
+	for($i=0;$i<count($_POST['depositantes']);$i++){
+		$res=mysql_db_query($base,"SELECT * FROM depositantes WHERE plaza = '".$_POST['plazausuario']."' AND cve='".$_POST['depositantes'][$i]."'");
+		$row=mysql_fetch_array($res);
+		$cveori=$row['cve_ori'];
+		$pdf->SetFont('Arial','',13);
+		$pdf->Cell(0,10,"Estado de Cuenta del Depositante ".$row['nombre']." ".fechaLocal()." ".horaLocal(),0,0,"L");
+		$pdf->Ln();
+		$pdf->Ln();
+		$pdf->SetFont('Arial','',9);
+		$pdf->Cell(18,6,"Fecha",1,0,'C');
+		$pdf->Cell(65,6,"Motivo",1,0,'C');
+		$pdf->Cell(20,6,"Usados",1,0,'C');
+		$pdf->Cell(20,6,"Generados",1,0,'C');
+		$pdf->Cell(20,6,"Saldo",1,0,'C');
+		$pdf->Cell(55,6,"Observaciones",1,0,'C');
+		$pdf->Ln();
+		$x=$abono=$cargo=0;
+		if($_POST['fecha_ini']<"2013-10-01") $fecha="2013-10-01";
+		else $fecha=$_POST['fecha_ini'];
+		$saldo = saldo_depositante3($row['cve'],1,0,$fecha,"");
+		$pdf->Cell(18,6,$fecha,1,0,'C');
+		$pdf->Cell(65,6,"Saldo Anterior",1,0,'C');
+		$pdf->Cell(20,6," ",1,0,'C');
+		$pdf->Cell(20,6," ",1,0,'C');
+		$pdf->Cell(20,6,number_format($saldo,0),1,0,'C');
+		$pdf->Cell(55,6," ",1,0,'C');
+		$pdf->Ln();
+		$pdf->Ln();
+		while($fecha<=$_POST['fecha_fin']){
+			
+			$res=mysql_db_query($base,"SELECT * FROM cobro_engomado WHERE depositante='".$_POST['depositantes'][$i]."' AND estatus!='C' AND tipo_pago =6 AND tipo_vale>0 AND fecha='$fecha'");
+			while($row=mysql_fetch_array($res)){
+				$cargo++;
+				$saldo--;
+				$pdf->Cell(18,6,$fecha,1,0,'C');
+				$pdf->Cell(65,6,"Venta de Engomado # ".$row['cve'].' Vale: '.$row['vale_pago_anticipado'],1,0,'C');
+				$pdf->Cell(20,6,number_format(1,0),1,0,'C');
+				$pdf->Cell(20,6,number_format(0,0),1,0,'C');
+				$pdf->Cell(20,6,number_format($saldo,0),1,0,'C');
+				$pdf->Cell(55,6,$row['concepto'],1,0,'C');
+				$pdf->Ln();
+				$x++;
+			}
+
+			$res=mysql_db_query($base,"SELECT * FROM vales_pago_anticipado WHERE depositante='".$_POST['depositantes'][$i]."' AND estatus!='C' AND fecha='$fecha'");
+			while($row=mysql_fetch_array($res)){
+				$abono++;
+				$saldo++;
+				$pdf->Cell(18,6,$fecha,1,0,'C');
+				$pdf->Cell(65,6,'Vale: '.$row['cve'],1,0,'C');
+				$pdf->Cell(20,6,number_format(0,0),1,0,'C');
+				$pdf->Cell(20,6,number_format(1,0),1,0,'C');
+				$pdf->Cell(20,6,number_format($saldo,0),1,0,'C');
+				$pdf->Cell(55,6,$row['concepto'],1,0,'C');
+				$pdf->Ln();
+				$x++;
+			}
+			
+			$fecha=date( "Y-m-d" , strtotime ( "+ 1 day" , strtotime($fecha) ) );
+		}
+		$pdf->Cell(18,6,$x.' Registros',1,0,'C');
+		$pdf->Cell(65,6," ",1,0,'C');
+		$pdf->Cell(20,6,number_format($cargo,2),1,0,'C');
+		$pdf->Cell(20,6,number_format($abono,2),1,0,'C');
+		$pdf->Cell(20,6,number_format($saldo,2),1,0,'C');
+		$pdf->Cell(55,6," ",1,0,'C');
+		$pdf->Ln();
+	}
+	$pdf->Output();
+	exit();	
+}
+
+if($_POST['cmd']==101){
+	echo '<html><body>';
+	
+	$res=mysql_db_query($base,"SELECT * FROM depositantes WHERE plaza = '".$_POST['plazausuario']."' AND cve=".$_POST['reg']);
+	$row=mysql_fetch_array($res);
+	$cveori=$row['cve_ori'];
+	echo '<table align="center">';
+	//echo '<tr><td><img src="images/membrete.JPG"></td></tr>';
+	echo '</table>';
+	echo '<br>';
+	echo '<h2>Estado de Cuenta del Depositante '.$row['nombre'].'</h2>'.fechaLocal().' '.horaLocal().'</br>';
+	echo '<table width="100%" border="0" cellpadding="4" cellspacing="1" class="">';
+	echo '<tr bgcolor="#E9F2F8">';
+	echo '<th>Fecha</th><th>Motivo</th><th>Cargo</th><th>Abono</th><th>Saldo</th><th>Observaciones</th>';
+	echo '</tr>';
+	$x=$abono=$cargo=0;
+	rowb();
+	$fecha=$_POST['fecha_ini'];
+	if($_POST['fecha_ini']<"2013-10-01") $fecha="2013-10-01";
+	else $fecha=$_POST['fecha_ini'];
+	$saldo = saldo_depositante($row['cve'],1,0,$fecha,"");
+	echo '<td align=center>&nbsp;'.$fecha.'</td>';
+	echo '<td align=left>&nbsp;Saldo Anterior</td>';
+	echo '<td align="right">&nbsp;</td>';
+	echo '<td align="right">&nbsp;</td>';
+	echo '<td align="right">'.number_format($saldo,2).'</td>';
+	echo '<td align="left">&nbsp;</td>';
+	echo '</tr>';
+	while($fecha<=$_POST['fecha_fin']){
+		$res=mysql_db_query($base,"SELECT * FROM cobro_engomado WHERE depositante='".$_POST['reg']."' AND estatus!='C' AND tipo_pago IN (2,6) AND fecha='$fecha'");
+		while($row=mysql_fetch_array($res)){
+			if($row['tipo_pago']==6){
+				$abono+=abs($row['monto']);
+				$saldo+=abs($row['monto']);
+				rowb();
+				echo '<td align=center>&nbsp;'.$fecha.'</td>';
+				echo '<td align=left>Venta de Engomado Anticipado # '.$row['cve'].'&nbsp;</td>';
+				echo '<td align="right">&nbsp;</td>';
+				echo '<td align="right">'.number_format(abs($row['monto']),2).'</td>';
+				echo '<td align="right">'.number_format($saldo,2).'</td>';
+				echo '<td align="left">&nbsp;</td>';
+				echo '</tr>';
+			}
+			else{
+				$cargo+=abs($row['monto']);
+				$saldo-=abs($row['monto']);
+				rowb();
+				echo '<td align=center>&nbsp;'.$fecha.'</td>';
+				echo '<td align=left>Venta de Engomado a Credito # '.$row['cve'].'&nbsp;</td>';
+				echo '<td align="right">'.number_format(abs($row['monto']),2).'</td>';
+				echo '<td align="right">&nbsp;</td>';
+				echo '<td align="right">'.number_format($saldo,2).'</td>';
+				echo '<td align="left">&nbsp;</td>';
+				echo '</tr>';
+			}
+			$x++;
+		}
+		
+		$fecha=date( "Y-m-d" , strtotime ( "+ 1 day" , strtotime($fecha) ) );
+	}
+	echo '	
+			<tr>
+			<td colspan="2" bgcolor="#E9F2F8">'.$x.' Registro(s)</td>
+			<td bgcolor="#E9F2F8" align="right">'.number_format($cargo,2).'</td>
+			<td bgcolor="#E9F2F8" align="right">'.number_format($abono,2).'</td>
+			<td bgcolor="#E9F2F8" align="right">'.number_format($saldo,2).'</td>
+			<td colspan="2" bgcolor="#E9F2F8">&nbsp;</td>
+			</tr>';
+	echo '</table>';
+	echo '<script>window.print();</script>
+	</body></html>';
+	exit();
+}
+
+if($_POST['ajax']==1){
+	$select= " SELECT * FROM depositantes WHERE plaza='".$_POST['plazausuario']."' AND edo_cuenta=1 and estatus='0' ";
+	if ($_POST['nombre']!="") { $select.=" AND nombre LIKE '%".$_POST['nombre']."%'"; }
+	$select.=" ORDER BY nombre";
+	$res=mysql_db_query($base,$select);
+	if(mysql_num_rows($res)>0) {
+		$nivelUsuario = nivelUsuario();
+		echo '<table width="100%" border="0" cellpadding="4" cellspacing="1" class="">';
+		echo '<tr><td bgcolor="#E9F2F8" colspan="10">'.mysql_num_rows($res).' Registro(s)</td></tr>';
+		echo '<tr bgcolor="#E9F2F8">';
+		echo '<th><input type="checkbox" onClick="if(this.checked) $(\'.chks\').attr(\'checked\',\'checked\'); else $(\'.chks\').removeAttr(\'checked\');"></th><th>Nombre</th>';
+		if($nivelUsuario>1) echo '<th>Saldo Inicial<br>Cantidad de Vales<br>No Importe</th>';
+		echo '<th>Saldo Anterior</th><th>Usados<th>Generados</th><th>Saldo</th>';
+		echo '</tr>';
+		$i=0;
+		$x=0;
+		$totales=array();
+		while($row=mysql_fetch_array($res)){
+			rowb();
+			echo'<td align="center"><input type="checkbox" name="depositantes[]" class="chks" value="'.$row['cve'].'"></td>';
+			$res1=mysql_query("SELECT COUNT(cve) FROM pagos_caja WHERE depositante='".$row['cve']."' AND estatus!='C' AND datediff(CURDATE(),fecha)<=60");
+			$row1=mysql_fetch_array($res1);
+			if($row1[0]>0)
+				echo '<td align="left">'.$row['nombre'].'</td>';
+			else
+				echo '<td align="left"><font color="RED">'.$row['nombre'].'</font></td>';
+			if(($nivelUsuario>1 && $row['saldo_vales'] == 0) || $_POST['cveusuario']==1){
+				echo '<td align="center"><input type="text" class="textField" size="5" id="saldo_vales_'.$row['cve'].'" value="'.$row['saldo_vales'].'">
+				<br><input type="button" value="Guardar" onClick="guardarSaldo('.$row['cve'].')"></td>';
+			}
+			elseif($nivelUsuario>1){
+				echo '<td align="center">'.$row['saldo_vales'].'</td>';
+			}
+			$saldo_anterior = saldo_depositante3($row['cve'],1,0,$_POST['fecha_ini'],"");
+			$cargo = saldo_depositante3($row['cve'],2,1,$_POST['fecha_ini'],$_POST['fecha_fin']);
+			$abono = saldo_depositante3($row['cve'],2,2,$_POST['fecha_ini'],$_POST['fecha_fin']);
+			echo '<td align="right">'.number_format($saldo_anterior,2).'</td>';
+			echo '<td align="right">'.number_format($cargo,2).'</td>';
+			echo '<td align="right">'.number_format($abono,2).'</td>';
+			echo '<td align="right"><a href="#" onClick="atcr(\'edo_cuenta_depositante3.php\',\'\',1,'.$row['cve'].')">'.number_format($saldo_anterior+$abono-$cargo,2).'</a></td>';
+			echo '</tr>';
+			$totales[0]+=$saldo_anterior;
+			$totales[1]+=$cargo;
+			$totales[2]+=$abono;
+			$totales[3]+=$saldo_anterior+$abono-$cargo;
+			$i++;
+		}
+		$c=1;
+		if($nivelUsuario>1) $c++;
+		echo '	
+			<tr>
+			<td bgcolor="#E9F2F8" colspan="'.$c.'">'.$i.' Registro(s)</td>
+			<td bgcolor="#E9F2F8" align="right">Totales:&nbsp;</td>';
+		foreach($totales as $v)
+			echo '<td bgcolor="#E9F2F8" align="right">'.number_format($v,2).'</td>';
+		echo '
+			</tr>
+		</table>';
+	} else {
+		echo '
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td class="sanLR10"><font class="fntN10B"> No se encontraron registros</font></td>
+			</tr>	  
+			</table>';
+	}
+	exit();	
+}
+
+if($_POST['ajax']==2){
+	
+	$res=mysql_db_query($base,"SELECT * FROM depositantes WHERE plaza='".$_POST['plazausuario']."' AND cve=".$_POST['depositante']);
+	$row=mysql_fetch_array($res);
+	echo '<table width="100%">';
+	echo '<tr><td class="tableEnc">Estado de Cuenta del Depositante '.$row['nombre'].'</td></tr>';
+	echo '</table>';
+	echo '<br>';
+	echo '<table width="100%" border="0" cellpadding="4" cellspacing="1" class="">';
+	echo '<tr bgcolor="#E9F2F8">';
+	echo '<th>Fecha</th><th>Motivo</th><th>Usados</th><th>Generados</th><th>Saldo</th><th>Observaciones</th>';
+	echo '</tr>';
+	$x=$abono=$cargo=0;
+	rowb();
+	$fecha=$_POST['fecha_ini'];
+	if($_POST['fecha_ini']<"2013-10-01") $fecha="2013-10-01";
+	else $fecha=$_POST['fecha_ini'];
+	$saldo = saldo_depositante3($row['cve'],1,0,$fecha,"");
+	echo '<td align=center>&nbsp;'.$fecha.'</td>';
+	echo '<td align=left>&nbsp;Saldo Anterior</td>';
+	echo '<td align="right">&nbsp;</td>';
+	echo '<td align="right">&nbsp;</td>';
+	echo '<td align="right">'.number_format($saldo,2).'</td>';
+	echo '<td align="left">&nbsp;</td>';
+	echo '</tr>';
+	$array_detalle = array();
+	while($fecha<=$_POST['fecha_fin']){
+		$res=mysql_db_query($base,"SELECT * FROM cobro_engomado WHERE depositante='".$_POST['depositante']."' AND estatus!='C' AND tipo_pago = 6 AND tipo_vale > 0 AND vale_pago_anticipado > 0 AND fecha='$fecha'");
+		while($row=mysql_fetch_array($res)){
+
+			$array_detalle[$fecha.' '.$row['hora'].'_1_'.$row['cve']]['cargo'] = 1;
+			$array_detalle[$fecha.' '.$row['hora'].'_1_'.$row['cve']]['fecha'] = $fecha.' '.$row['hora'];
+			$array_detalle[$fecha.' '.$row['hora'].'_1_'.$row['cve']]['tipo'] = 0;
+			$array_detalle[$fecha.' '.$row['hora'].'_1_'.$row['cve']]['concepto'] = 'Vale: '.$row['vale_pago_anticipado'].', '.$row['obs'].'&nbsp;';
+			$array_detalle[$fecha.' '.$row['hora'].'_1_'.$row['cve']]['movimiento'] = 'Venta de Engomado Anticipado # '.$row['cve'].'&nbsp;Placa: '.$row['placa'];
+				
+			$x++;
+		}
+		
+
+		
+		$res=mysql_db_query($base,"SELECT * FROM vales_pago_anticipado WHERE depositante='".$_POST['depositante']."' AND estatus!='C' AND fecha='$fecha'");
+		while($row=mysql_fetch_array($res)){
+			$vales = '';
+			if($row['vale_ini'] > 0 && $row['vale_fin'] > 0){
+				$vales = '<br>Vales: '.$row['vale_ini'].' - '.$row['vale_fin'];
+			}
+			$array_detalle[$fecha.' '.$row['hora'].'_3_'.$row['cve']]['abono'] = 1;
+			$array_detalle[$fecha.' '.$row['hora'].'_3_'.$row['cve']]['fecha'] = $fecha.' '.$row['hora'];
+			$array_detalle[$fecha.' '.$row['hora'].'_3_'.$row['cve']]['tipo'] = 1;
+			$array_detalle[$fecha.' '.$row['hora'].'_3_'.$row['cve']]['concepto'] = $row['obs'].'&nbsp;'.$vales;
+			$array_detalle[$fecha.' '.$row['hora'].'_3_'.$row['cve']]['movimiento'] = 'Vale de Pago Anticipado # '.$row['cve'];
+			
+			$x++;
+		}
+
+		
+		
+		
+
+		
+		$fecha=date( "Y-m-d" , strtotime ( "+ 1 day" , strtotime($fecha) ) );
+	}
+	ksort($array_detalle);
+	$x=0;
+	foreach($array_detalle as $datos){
+		$cargo+=$datos['cargo'];
+		$abono+=$datos['abono'];
+		$saldo+=$datos['abono']-$datos['cargo'];
+		rowb();
+		echo '<td align=center>&nbsp;'.$datos['fecha'].'</td>';
+		echo '<td align=left>'.$datos['movimiento'].'</td>';
+		if($datos['tipo']==0){
+			echo '<td align="right">'.number_format($datos['cargo'],2).'</td>';
+			echo '<td align="right">&nbsp;</td>';
+		}
+		else{
+			echo '<td align="right">&nbsp;</td>';
+			echo '<td align="right">'.number_format($datos['abono'],2).'</td>';
+		}
+		echo '<td align="right">'.number_format($saldo,2).'</td>';
+		echo '<td align="left">'.$datos['concepto'].'</td>';
+		echo '</tr>';
+		$x++;
+	}
+	echo '	
+			<tr>
+			<td colspan="2" bgcolor="#E9F2F8">'.$x.' Registro(s)</td>
+			<td bgcolor="#E9F2F8" align="right">'.number_format($cargo,2).'</td>
+			<td bgcolor="#E9F2F8" align="right">'.number_format($abono,2).'</td>
+			<td bgcolor="#E9F2F8" align="right">'.number_format($saldo,2).'</td>
+			<td colspan="2" bgcolor="#E9F2F8">&nbsp;</td>
+			</tr>';
+	echo '</table>';
+	exit();
+}
+
+
+if($_POST['ajax']==12){
+	$res = mysql_query("SELECT * FROM depositantes WHERE cve = '".$_POST['depositante']."'");
+	$row = mysql_fetch_array($res);
+	if($row['saldo_vales']!=$_POST['saldo']){
+		mysql_query("INSERT historial SET menu='".$_POST['cvemenu']."',cveaux='".$_POST['depositante']."',fecha='".fechaLocal()." ".horaLocal()."',obs='".$_POST['plazausuario']."',
+			dato='Saldo Inicial Vales',nuevo='".$_POST['saldo']."',anterior='".$row['saldo_vales']."',arreglo='',usuario='".$_POST['cveusuario']."'");
+		mysql_query("UPDATE depositantes SET saldo_vales='".$_POST['saldo']."' WHERE cve='".$_POST['depositante']."'");
+	}
+
+	exit();
+}
+
+top($_SESSION);
+
+if($_POST['cmd']==1){
+	echo '<table>';
+	echo '<tr>
+			<td><a href="#" onclick="buscar_cargos(\''.$_POST['reg'].'\');"><img src="images/buscar.gif" border="0">&nbsp;&nbsp;Buscar Cargos</a></td>
+			<!--<td><a href="#" onclick="atcr(\'edo_cuenta_depositante.php\',\'_blank\',101,'.$_POST['reg'].');"><img src="images/b_print.png" border="0">&nbsp;&nbsp;Imprimir</a></td>-->
+			<td><a href="#" onclick="atcr(\'edo_cuenta_depositante.php\',\'\',0,\'0\');"><img src="images/flecha-izquierda.gif" border="0">&nbsp;&nbsp;Regresar</a></td>
+		</tr>';
+	echo '</table>';
+	echo '<table>';
+	echo '<tr><td>Fecha Inicial</td><td><input type="text" name="fecha_ini" id="fecha_ini" value="'.$_POST['fecha_ini'].'" class="readOnly" size="12" readonly>&nbsp;<a href="#" onClick="displayCalendar(document.forms[0].fecha_ini,\'yyyy-mm-dd\',this,true)"><img src="images/calendario.gif" border="0"></a></td></tr>';
+	echo '<tr><td>Fecha Final</td><td><input type="text" name="fecha_fin" id="fecha_fin" value="'.$_POST['fecha_fin'].'" class="readOnly" size="12" readonly>&nbsp;<a href="#" onClick="displayCalendar(document.forms[0].fecha_fin,\'yyyy-mm-dd\',this,true)"><img src="images/calendario.gif" border="0"></a></td></tr>';
+	echo '</table>';
+	echo '<br>';
+	echo '<input type="hidden" name="sel[]" value="'.$_POST['reg'].'">';
+	//Listado
+	echo '<div id="idCargos">';
+	echo '</div>';
+	echo '
+	<script>
+	function buscar_cargos(depositante)
+	{
+		if(document.forma.fecha_ini.value<"2009-09-01") document.forma.fecha_ini.value="2017-04-01";
+		if(document.forma.fecha_fin.value<"2009-09-01") document.forma.fecha_fin.value="2017-04-01";
+		document.getElementById("idCargos").innerHTML = "<img src=\'images/ajaxtrabajando.gif\' border=\'0\' align=\'absmiddle\'> Espere un momento, buscando registros...";
+		objeto=crearObjeto();
+		if (objeto.readyState != 0) {
+			alert("Error: El Navegador no soporta AJAX");
+		} else {
+			objeto.open("POST","edo_cuenta_depositante3.php",true);
+			objeto.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+			objeto.send("ajax=2&depositante="+depositante+"&fecha_ini="+document.getElementById("fecha_ini").value+"&fecha_fin="+document.getElementById("fecha_fin").value+"&plazausuario="+document.forma.plazausuario.value);
+			objeto.onreadystatechange = function()
+			{
+				if (objeto.readyState==4)
+				{document.getElementById("idCargos").innerHTML = objeto.responseText;}
+			}
+		}
+	}
+	window.onload = function () {
+			buscar_cargos(\''.$_POST['reg'].'\'); //Realizar consulta de todos los registros al iniciar la forma.
+	}
+	</script>';
+}
+
+
+if($_POST['cmd']<1){
+	/*** PAGINA PRINCIPAL **************************************************/
+
+		//Busqueda
+		//<td><a href="#" onclick="atcr(\'edo_cuenta_parque.php\',\'_blank\',101,'.$_POST['reg'].');"><img src="images/b_print.png" border="0"></a>&nbsp;&nbsp;Imprimir Detalles</td>
+				
+		echo '<table>';
+		echo '<tr>
+				<td><a href="#" onclick="buscarRegistros();"><img src="images/buscar.gif" border="0"></a>&nbsp;&nbsp;Buscar&nbsp;&nbsp;</td>
+				<td><a href="#" onclick="atcr(\'edo_cuenta_depositante3.php\',\'_blank\',100,0);"><img src="images/b_print.png" border="0"></a>&nbsp;&nbsp;Imprimir</td>
+				<!--<td><a href="#" onclick="atcr(\'edo_cuenta_depositante3.php\',\'_blank\',102,0);"><img src="images/b_print.png" border="0"></a>&nbsp;&nbsp;Imprimir Detalle</td>-->
+			 </tr>';
+		echo '</table>';
+		echo '<table>';
+		echo '<tr><td>Fecha Inicial</td><td><input type="text" name="fecha_ini" id="fecha_ini" value="'.substr(fechaLocal(),0,8).'01'.'" class="textField" size="12">&nbsp;<a href="#" onClick="displayCalendar(document.forms[0].fecha_ini,\'yyyy-mm-dd\',this,true)"><img src="images/calendario.gif" border="0"></a></td></tr>';
+		echo '<tr><td>Fecha Final</td><td><input type="text" name="fecha_fin" id="fecha_fin" value="'.fechaLocal().'" class="textField" size="12">&nbsp;<a href="#" onClick="displayCalendar(document.forms[0].fecha_fin,\'yyyy-mm-dd\',this,true)"><img src="images/calendario.gif" border="0"></a></td></tr>';
+		echo '<tr><td>Nombre</td><td><input type="text" class="textField" name="nombre" id="nombre" size="30"></td></tr>';
+		echo '</table>';
+		echo '<br>';
+		echo '<div><b>Los depositantes en rojo son los que no han tenido ningun pago en 2 meses</b></div>';
+		//Listado
+		echo '<div id="Resultados">';
+		echo '</div>';
+
+}
+bottom();
+echo '
+<Script language="javascript">
+
+	function buscarRegistros()
+	{
+		document.getElementById("Resultados").innerHTML = "<img src=\'images/ajaxtrabajando.gif\' border=\'0\' align=\'absmiddle\'> Espere un momento, buscando registros...";
+		objeto=crearObjeto();
+		if (objeto.readyState != 0) {
+			alert("Error: El Navegador no soporta AJAX");
+		} else {
+			objeto.open("POST","edo_cuenta_depositante3.php",true);
+			objeto.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+			objeto.send("ajax=1&nombre="+document.getElementById("nombre").value+"&fecha_ini="+document.getElementById("fecha_ini").value+"&fecha_fin="+document.getElementById("fecha_fin").value+"&numeroPagina="+document.getElementById("numeroPagina").value+"&plazausuario="+document.getElementById("plazausuario").value+"&cveusuario="+document.getElementById("cveusuario").value+"&cvemenu="+document.getElementById("cvemenu").value);
+			objeto.onreadystatechange = function()
+			{
+				if (objeto.readyState==4)
+				{document.getElementById("Resultados").innerHTML = objeto.responseText;}
+			}
+		}
+		document.getElementById("numeroPagina").value = "0"; //Se reestablece la variable para que las busquedas por criterio no se afecten.
+	}
+
+	function guardarSaldo(depositante){
+		objeto=crearObjeto();
+		if (objeto.readyState != 0) {
+			alert("Error: El Navegador no soporta AJAX");
+		} else {
+			objeto.open("POST","edo_cuenta_depositante3.php",true);
+			objeto.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+			objeto.send("ajax=12&depositante="+depositante+"&saldo="+document.getElementById("saldo_vales_"+depositante).value+"&plazausuario="+document.getElementById("plazausuario").value+"&cveusuario="+document.getElementById("cveusuario").value+"&cvemenu="+document.getElementById("cvemenu").value);
+			objeto.onreadystatechange = function()
+			{
+				if (objeto.readyState==4)
+				{buscarRegistros();}
+			}
+		}
+	}
+	
+	';	
+	if($_POST['cmd']<1){
+	echo '
+	window.onload = function () {
+			buscarRegistros(); //Realizar consulta de todos los registros al iniciar la forma.
+	}';
+	}
+
+	echo '
+	
+	</Script>
+';
+
+
+?>
