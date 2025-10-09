@@ -22,16 +22,16 @@ function getRealIP()
                :
                "unknown" );
 
-      // los proxys van añadiendo al final de esta cabecera
+      // los proxys van aï¿½adiendo al final de esta cabecera
       // las direcciones ip que van "ocultando". Para localizar la ip real
       // del usuario se comienza a mirar por el principio hasta encontrar
-      // una dirección ip que no sea del rango privado. En caso de no
+      // una direcciï¿½n ip que no sea del rango privado. En caso de no
       // encontrarse ninguna se toma como valor el REMOTE_ADDR
 
-      $entries = split('[, ]', $_SERVER['HTTP_X_FORWARDED_FOR']);
+      $entries = preg_split('[, ]', $_SERVER['HTTP_X_FORWARDED_FOR']);
 
       reset($entries);
-      while (list(, $entry) = each($entries))
+      foreach($entries as $entry)
       {
          $entry = trim($entry);
          if ( preg_match("/^([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)/", $entry, $ip_list) )
@@ -121,18 +121,22 @@ if (isset($_POST['loginUser']) && isset($_POST['loginPassword'])) {
 	$redirectLoginFailed = "../index2.php?ErrLogUs=true";
 	//Hacemos uso de la funcion GetSQLValueString para evitar la inyeccion de SQL
 	//$LoginRS_query = sprintf("SELECT * FROM usuarios WHERE usuario LIKE BINARY %s AND password LIKE BINARY %s", Se le quito validacion de distincion de mayusculas y minusculas
-	$LoginRS_query = sprintf("SELECT * FROM usuarios WHERE usuario = %s AND password = %s AND estatus='A'",
-			  GetSQLValueString($loginUsername, "text"), GetSQLValueString($password, "text")); 
-	   
-	//echo $LoginRS_query;
-	//exit();
-	$LoginRS = mysql_query($LoginRS_query) or die(mysql_error());
+	$stmt = $mysqli->prepare("SELECT * FROM usuarios WHERE usuario = ? AND password = ? AND estatus = 'A'");
+	$stmt->bind_param("ss", $usuario, $password);
 
-	$loginFoundUser = mysql_num_rows($LoginRS);
+	// Sanitizar entrada del usuario
+	$usuario = trim($loginUsername);
+	$password = trim($password);
+
+	$stmt->execute();
+
+	$resultado = $stmt->get_result();
+
+	$loginFoundUser = $resultado->num_rows;
 
 	if ($loginFoundUser) {
 
-		$Usuario=mysql_fetch_array($LoginRS);
+		$Usuario=$resultado->fetch_assoc();
 
 		if($Usuario['cve']!=1){
 			$rsCerrado=mysql_query("SELECT * FROM usuarios WHERE cve='1'");
@@ -200,7 +204,7 @@ function top($SESSION,$enter=0) {
 	
 
 	//$url=split("/",$PHP_SELF);
-	$url=split("/",$_SERVER["PHP_SELF"]);
+	$url=explode("/",$_SERVER["PHP_SELF"]);
 	$url=array_reverse($url);
 
 	
@@ -461,7 +465,7 @@ function top2($SESSION) {
 	
 
 	//$url=split("/",$PHP_SELF);
-	$url=split("/",$_SERVER["PHP_SELF"]);
+	$url=explode("/",$_SERVER["PHP_SELF"]);
 	$url=array_reverse($url);
 
 	
@@ -719,7 +723,7 @@ function bottom() {
                 $("#panel").css("height",self.screen.availHeight);
             }
         }  
-        $(".placas").validCampo("abcdefghijklmnñopqrstuvwxyzABCDEFGHIJKLMNÑOPQRSTUVWXYZ1234567890");
+        $(".placas").validCampo("abcdefghijklmnï¿½opqrstuvwxyzABCDEFGHIJKLMNï¿½OPQRSTUVWXYZ1234567890");
         $(".enteros").validCampo("1234567890");
 		';
 	/*$rs=mysql_query("SELECT chat,ide FROM usuarios where cve='".$_SESSION['CveUsuario']."'");
@@ -775,7 +779,7 @@ function nivelUsuario(){
 
 function menuppal2($SESSION) {
 	global $base,$array_modulos,$array_plaza,$PHP_SELF,$_POST;
-	$url=split("/",$_SERVER["PHP_SELF"]);
+	$url=explode("/",$_SERVER["PHP_SELF"]);
 	$url=array_reverse($url);
 	echo '
 	<table width="100%" border="0" cellspacing="0" cellpadding="3">
@@ -811,7 +815,7 @@ function menuppal2($SESSION) {
 		}
 		$mostrar="";
 		foreach($array_modulos as $k=>$v){ 
-			//if($k!=19 || $_POST['cveusuario']==1 || $_POST['cveusuario'] == 420){
+			//if($k!=19 || $_POST['cveusuario']==1 ||ï¿½$_POST['cveusuario'] == 420){
 			if($k!=19 || $_POST['cveusuario'] == 1 || $_POST['cveusuario'] == 420){
 				if($_POST['cveusuario']==1){
 					$rs=mysql_query("SELECT * FROM menu WHERE modulo='$k' AND cve!='107' ORDER BY orden");
@@ -1196,7 +1200,7 @@ echo '';
 	}
 
 	function fecha_letra($fecha){
-		$fecven=split("-",$fecha);
+		$fecven=explode("-",$fecha);
 		$fecha_letra=$fecven[2]." de ";;
 		switch($fecven[1]){
 			case "01":$fecha_letra.="Enero";break;

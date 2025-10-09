@@ -1,15 +1,13 @@
 <?php
-$zona_horaria = file_get_contents('https://pendientes.hgaribay.com/zonahoraria.txt');
-date_default_timezone_set ($zona_horaria);
-eval(file_get_contents('/var/www/config.cfg'));
+
 //Conexion con la base
-if (!$MySQL=@mysql_connect($DB_HOST, 'mh35', 'bAllenA#66#')) {
+if (!$MySQL=@mysql_connect('localhost', 'mh35', 'bAllenA#66#')) {
 	$t=time();
 	while (time()<$t+5) {}
-	if (!$MySQL=@mysql_connect($DB_HOST, 'mh35', 'bAllenA#66#')) {
+	if (!$MySQL=@mysql_connect('localhost', 'mh35', 'bAllenA#66#')) {
 		$t=time();
 		while (time()<$t+10) {}
-		if (!$MySQL=@mysql_connect($DB_HOST, 'mh35', 'bAllenA#66#')) {
+		if (!$MySQL=@mysql_connect('localhost', 'mh35', 'bAllenA#66#')) {
 		echo '<br><br><br><h3 align=center">Hay problemas de comunicaci&oacute;n con la Base de datos.</h3>';
 		echo '<h4>Por favor intente mas tarde.-</h4>';
 		exit;
@@ -18,14 +16,7 @@ if (!$MySQL=@mysql_connect($DB_HOST, 'mh35', 'bAllenA#66#')) {
 }
 $base='mh35';
 mysql_select_db($base);
-$now = new DateTime();
-$mins = $now->getOffset()/60;
-$sgn = ($mins < 0 ? -1 : 1);
-$mins = abs($mins);
-$hrs = floor($mins/60);
-$mins -= $hrs*60;
-$offset = sprintf('%+d:%02d', $hrs*$sgn, $mins);
-mysql_query("SET time_zone='$offset'");
+
 
 
 function genera_html($plaza, $fecha, $tipo = 0){

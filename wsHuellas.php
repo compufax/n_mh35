@@ -476,28 +476,12 @@ function RegistraChecada($usuario, $password, $lector, $operador, $tipo = 0)
 function ConectarDB()
 {
 	$msg="OK";
-	eval(file_get_contents('/var/www/config.cfg'));
-	//Conexion con la base
-	if (!$MySQL=@mysql_connect($DB_HOST, 'tepe_tepe2', 'Ballena6')) {
-		$t=time();
-		while (time()<$t+5) {}
-		if (!$MySQL=@mysql_connect($DB_HOST, 'tepe_tepe2', 'Ballena6')) {
-			$t=time();
-			while (time()<$t+10) {}
-			if (!$MySQL=@mysql_connect($DB_HOST, 'tepe_tepe2', 'Ballena6')) {
-			echo '<br><br><br><h3 align=center">Hay problemas de comunicaci&oacute;n con la Base de datos.</h3>';
-			echo '<h4>Por favor intente mas tarde.-</h4>';
-			exit;
-			}
-		}
-	}
-	mysql_select_db("gveri");
 	return $msg;
 }
 // Get our posted data if the service is being consumed
 // otherwise leave this data blank.                
-$POST_DATA = isset($GLOBALS['HTTP_RAW_POST_DATA']) 
-? $GLOBALS['HTTP_RAW_POST_DATA'] : '';
+$POST_DATA = (file_get_contents('php://input') != '') 
+? file_get_contents('php://input') : '';
 
 // pass our posted data (or nothing) to the soap service                    
 $server->service($POST_DATA);
