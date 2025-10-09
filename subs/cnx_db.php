@@ -1,5 +1,5 @@
 <?php
-
+require_once('funcionesmysql.php');
 //Conexion con la base
 if (!$MySQL=@mysql_connect('localhost', 'mh35', 'bAllenA#66#')) {
 	$t=time();
