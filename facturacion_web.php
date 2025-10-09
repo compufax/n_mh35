@@ -2,7 +2,7 @@
 /*echo '<h1>Pagina en mantenimiento<br>Disculpe las molestias</h1>';
 exit();*/
 
-if($_POST['cmd']==150){
+if(isset($_POST['cmd']) && $_POST['cmd']==150){
 
 	$body = array(
     'rfc' => $_POST['brfc'],

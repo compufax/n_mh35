@@ -19,7 +19,7 @@ while($Puestos=mysql_fetch_array($rsPuestos)){
 if($_POST['plazausuario']==0)
 	$rsPuesto=mysql_query("SELECT * FROM plazas ORDER BY numero");
 else
-	$rsPuesto=mysql_query("SELECT * FROM plazas WHERE plaza='".$_POST['plazausuario']."' ORDER BY numero");
+	$rsPuesto=mysql_query("SELECT * FROM plazas WHERE cve='".$_POST['plazausuario']."' ORDER BY numero");
 while($Puesto=mysql_fetch_array($rsPuesto)){
 	$array_plaza[$Puesto['cve']]=$Puesto['numero'].' '.$Puesto['nombre'];
 }
@@ -105,7 +105,7 @@ echo '<table width="100%" border="0" cellpadding="4" cellspacing="1" class="" id
 				}*/
 				echo '<td align="center">'.$array_nosi[$Personal['estatus']].'</td>';
 				$horas = array();
-				$resPersonal1 = mysql_query("SELECT IF(tipo=0,1,tipo),fechahora FROM checada_lector WHERE cvepersonal='{$Personal['cvepersonal']}' AND DATE(fechahora)='".substr($Personal['entrada'],0,10)."' GROUP BY IF(tipo=0,1,tipo)");
+				$resPersonal1 = mysql_query("SELECT IF(tipo=0,1,tipo),fechahora FROM checada_lector WHERE cvepersonal='{$Personal['cvepersonal']}' AND DATE(fechahora)='".substr($_POST['fecha'],0,10)."' GROUP BY IF(tipo=0,1,tipo)");
 				while($Personal1 = mysql_fetch_array($resPersonal1)) $horas[$Personal1[0]] = $Personal1[1];
 				foreach($array_motivo as $k=>$v) echo '<td align="center">'.substr($horas[$k],11,8).'</td>';
 				
@@ -179,7 +179,7 @@ if($_POST['cmd']==100) {
 				
 				echo '<td align="center">'.$array_nosi[$Personal['estatus']].'</td>';
 				$horas = array();
-				$resPersonal1 = mysql_query("SELECT IF(tipo=0,1,tipo),fechahora FROM checada_lector WHERE cvepersonal='{$Personal['cvepersonal']}' AND DATE(fechahora)='".substr($Personal['entrada'],0,10)."' GROUP BY IF(tipo=0,1,tipo)");
+				$resPersonal1 = mysql_query("SELECT IF(tipo=0,1,tipo),fechahora FROM checada_lector WHERE cvepersonal='{$Personal['cvepersonal']}' AND DATE(fechahora)='".substr($_POST['fecha'],0,10)."' GROUP BY IF(tipo=0,1,tipo)");
 				while($Personal1 = mysql_fetch_array($resPersonal1)) $horas[$Personal1[0]] = $Personal1[1];
 				foreach($array_motivo as $k=>$v) echo '<td align="center">'.substr($horas[$k],11,8).'</td>';
 				echo '</tr>';
@@ -265,7 +265,7 @@ if($_POST['ajax']==1) {
 				}*/
 				echo '<td align="center">'.$array_nosi[$Personal['estatus']].'</td>';
 				$horas = array();
-				$resPersonal1 = mysql_query("SELECT IF(tipo=0,1,tipo),fechahora FROM checada_lector WHERE cvepersonal='{$Personal['cvepersonal']}' AND DATE(fechahora)='".substr($Personal['entrada'],0,10)."' GROUP BY IF(tipo=0,1,tipo)");
+				$resPersonal1 = mysql_query("SELECT IF(tipo=0,1,tipo),fechahora FROM checada_lector WHERE cvepersonal='{$Personal['cvepersonal']}' AND DATE(fechahora)='".substr($_POST['fecha'],0,10)."' GROUP BY IF(tipo=0,1,tipo)");
 				while($Personal1 = mysql_fetch_array($resPersonal1)) $horas[$Personal1[0]] = $Personal1[1];
 				foreach($array_motivo as $k=>$v) echo '<td align="center">'.substr($horas[$k],11,8).'</td>';
 				
