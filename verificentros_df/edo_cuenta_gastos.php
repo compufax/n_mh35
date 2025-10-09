@@ -2,7 +2,7 @@
 include ("main.php"); 
 /*** ARREGLOS ***********************************************************/
 
-$rsUsuario=mysql_db_query($base,"SELECT * FROM usuarios");
+$rsUsuario=mysql_query("SELECT * FROM usuarios");
 while($Usuario=mysql_fetch_array($rsUsuario)){
 	$array_usuario[$Usuario['cve']]=$Usuario['usuario'];
 }
@@ -58,7 +58,7 @@ if($_POST['cmd']==102){
 		$pdf->Ln();
 		while($fecha<=$_POST['fecha_fin']){
 			
-			$res=mysql_db_query($base,"SELECT * FROM reembolsos WHERE plaza='".$_POST['plazausuario']."' AND estatus!='C' AND fecha_mov='$fecha'");
+			$res=mysql_query("SELECT * FROM reembolsos WHERE plaza='".$_POST['plazausuario']."' AND estatus!='C' AND fecha_mov='$fecha'");
 			while($row=mysql_fetch_array($res)){
 				$abono+=$row['monto'];
 				$saldo+=$row['monto'];
@@ -72,7 +72,7 @@ if($_POST['cmd']==102){
 				
 				$x++;
 			}
-			$res=mysql_db_query($base,"SELECT * FROM recibos_salida WHERE plaza='".$_POST['plazausuario']."' AND estatus!='C' AND fecha='$fecha'");
+			$res=mysql_query("SELECT * FROM recibos_salida WHERE plaza='".$_POST['plazausuario']."' AND estatus!='C' AND fecha='$fecha'");
 			while($row=mysql_fetch_array($res)){
 				$cargo+=$row['monto'];
 				$saldo-=$row['monto'];
@@ -133,7 +133,7 @@ if($_POST['ajax']==2){
 	echo '</tr>';
 	while($fecha<=$_POST['fecha_fin']){
 		
-		$res=mysql_db_query($base,"SELECT * FROM reembolsos WHERE plaza='".$_POST['plazausuario']."' AND estatus!='C' AND fecha_mov='$fecha'");
+		$res=mysql_query("SELECT * FROM reembolsos WHERE plaza='".$_POST['plazausuario']."' AND estatus!='C' AND fecha_mov='$fecha'");
 		while($row=mysql_fetch_array($res)){
 				$abono+=abs($row['monto']);
 				$saldo+=abs($row['monto']);
@@ -149,7 +149,7 @@ if($_POST['ajax']==2){
 			$x++;
 		}
 		
-		$res=mysql_db_query($base,"SELECT * FROM recibos_salida WHERE plaza='".$_POST['plazausuario']."' AND estatus!='C' AND fecha='$fecha'");
+		$res=mysql_query("SELECT * FROM recibos_salida WHERE plaza='".$_POST['plazausuario']."' AND estatus!='C' AND fecha='$fecha'");
 		while($row=mysql_fetch_array($res)){
 				$cargo+=abs($row['monto']);
 				$saldo-=abs($row['monto']);

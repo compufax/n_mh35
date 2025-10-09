@@ -4,12 +4,12 @@ include ("main.php");
 
 /*** ARREGLOS ***********************************************************/
 
-$rsPlaza=mysql_db_query($base,"SELECT * FROM plazas");
+$rsPlaza=mysql_query("SELECT * FROM plazas");
 while($Plaza=mysql_fetch_array($rsPlaza)){
 	$array_plaza[$Plaza['cve']]=$Plaza['nombre'];
 }
 
-$rsUsuario=mysql_db_query($base,"SELECT * FROM usuarios");
+$rsUsuario=mysql_query("SELECT * FROM usuarios");
 while($Usuario=mysql_fetch_array($rsUsuario)){
 	$array_usuario[$Usuario['cve']]=$Usuario['usuario'];
 }
@@ -57,10 +57,10 @@ if($_POST['cmd']==100){
 	if ($_POST['fecha']!="") { $select.=" AND left(entrada,10)>='".$_POST['fecha']."'"; }
 	if ($_POST['fechaf']!="") { $select.=" AND left(entrada,10)<='".$_POST['fechaf']."'"; }
 	if($_POST['usuario']!="all") { $select.=" AND usuario='".$_POST['usuario']."'";}
-	$rsentradas=mysql_db_query($base,$select);
+	$rsentradas=mysql_query($select);
 	$totalRegistros = mysql_num_rows($rsentradas);
 	$select .= " ORDER BY entrada desc";
-	$rsentradas=mysql_db_query($base,$select);
+	$rsentradas=mysql_query($select);
 	$pdf->SetWidths(array(50,50,50));
 	$pdf->SetAligns(array('C','C','C'));
 	while($Entradas=mysql_fetch_array($rsentradas)) {
@@ -109,7 +109,7 @@ if($_POST['ajax']==1) {
 		if ($_POST['fecha']!="") { $select.=" AND left(entrada,10)>='".$_POST['fecha']."'"; }
 		if ($_POST['fechaf']!="") { $select.=" AND left(entrada,10)<='".$_POST['fechaf']."'"; }
 		if($_POST['usuario']!="all") { $select.=" AND usuario='".$_POST['usuario']."'";}
-		$rsentradas=mysql_db_query($base,$select);
+		$rsentradas=mysql_query($select);
 		$totalRegistros = mysql_num_rows($rsentradas);
 		/*if($totalRegistros / $eRegistrosPagina > 1) 
 		{
@@ -121,7 +121,7 @@ if($_POST['ajax']==1) {
 		}
 		$select .= " ORDER BY entrada desc  LIMIT ".$primerRegistro.",".$eRegistrosPagina;*/
 		$select .= " ORDER BY entrada desc";
-		$rsentradas=mysql_db_query($base,$select);
+		$rsentradas=mysql_query($select);
 		
 		if(mysql_num_rows($rsentradas)>0) 
 		{
@@ -184,7 +184,7 @@ if($_POST['ajax']==1) {
 }
 
 if($_POST['ajax']==2){
-	$rsnum=mysql_db_query($base,"SELECT * FROM parque WHERE plaza='".$_POST['plaza']."' AND no_eco='".$_POST['no_eco']."'");
+	$rsnum=mysql_query("SELECT * FROM parque WHERE plaza='".$_POST['plaza']."' AND no_eco='".$_POST['no_eco']."'");
 	if($Num=mysql_fetch_array($rsnum))
 		echo 'si';
 	else
@@ -195,7 +195,7 @@ if($_POST['ajax']==2){
 if($_POST['ajax']==3) {
 		//Listado de Historial
 		$select= " SELECT * FROM cambios_datos_parque WHERE cve_unidad='".$_POST['cve_unidad']."' and plaza='".$_POST['plaza']."'";
-		$rscambios=mysql_db_query($base,$select);
+		$rscambios=mysql_query($select);
 		$totalRegistros = mysql_num_rows($rscambios);
 		if($totalRegistros / $eRegistrosPagina > 1) 
 		{
@@ -206,7 +206,7 @@ if($_POST['ajax']==3) {
 			{$eTotalPaginas = floor($eTotalPaginas);}
 		}
 		$select .= " ORDER BY fecha desc  LIMIT ".$primerRegistro.",".$eRegistrosPagina;
-		$rscambios=mysql_db_query($base,$select);
+		$rscambios=mysql_query($select);
 		
 		if(mysql_num_rows($rscambios)>0) 
 		{
@@ -279,7 +279,7 @@ top($_SESSION);
 		</style>';
 		
 		$select=" SELECT * FROM parque WHERE plaza='".$_POST['plaza']."' AND cve='".$_POST['reg']."' ";
-		$rsparque=mysql_db_query($base,$select);
+		$rsparque=mysql_query($select);
 		$Parque=mysql_fetch_array($rsparque);
 		if($_POST['reg']>0){
 			$Encabezado = 'No. Economico.'.$_POST['reg'];
@@ -380,7 +380,7 @@ top($_SESSION);
 		echo '></td></tr>';
 		if($_SESSION['PlazaUsuario']==0){
 			echo '<tr><th align="left">Plaza</th><td><select name="plaza" id="plaza"><option value="0">---Seleccione una Plaza---</option>';
-			$rsParque=mysql_db_query($base,"SELECT * FROM plazas ORDER BY nombre");
+			$rsParque=mysql_query("SELECT * FROM plazas ORDER BY nombre");
 			while($Plaza=mysql_fetch_array($rsParque)){
 				echo '<option value="'.$Plaza['cve'].'"';
 				if($Parque['plaza']==$Plaza['cve']) echo ' selected';
@@ -498,7 +498,7 @@ top($_SESSION);
 		echo '<tr><th align="left">Fecha Final</th><td><input type="text" name="fechaf" id="fechaf" class="readOnly" size="15" value="'.$fecha.'" readonly>&nbsp;<a href="#" onClick="displayCalendar(document.forms[0].fechaf,\'yyyy-mm-dd\',this,true)"><img src="images/calendario.gif" border="0"></a></td></tr>';
 		echo '<tr><th align="left">Usuario</th><td><select name="usuario" id="usuario"><option value="all">--- Todos ---</option>';
 		$estatus=array("A"=>"Activo","I"=>"Inactivo");
-		$res=mysql_db_query($base,"SELECT * FROM usuarios ORDER BY usuario");
+		$res=mysql_query("SELECT * FROM usuarios ORDER BY usuario");
 		while($row=mysql_fetch_array($res)){
 			echo '<option value="'.$row['cve'].'">'.$row['usuario'].' ('.$estatus[$row['estatus']].')</option>';
 		}

@@ -158,7 +158,7 @@ if($_POST['ajax']==1){
 top($_SESSION);
 if($_POST['cmd']==3){
      $insert="UPDATE checklist SET fechacan='".fechaLocal()."', horacan='".horaLocal()."',usuariocan='".$_POST['cveusuario']."',estatus='C' where cve='".$_POST['reg']."'";
-	 $ejecutar=mysql_db_query($base,$insert);
+	 $ejecutar=mysql_query($insert);
 	 $_POST['cmd']=0;
 }
 if($_POST['cmd']==2){
@@ -171,7 +171,7 @@ if($_POST['cmd']==2){
 				logo_cdmx='".$_POST['logo_cdmx']."',
 			  logo_sedema='".$_POST['logo_sedema']."',logo_very_cdmx='".$_POST['logo_very_cdmx']."',senal_puerta='".$_POST['senal_puerta']."',
 			  senal_exterior='".$_POST['senal_exterior']."', usuario='".$_POST['cveusuario']."',estatus='A', folio='".$folio."'";
-	 $ejecutar=mysql_db_query($base,$insert);
+	 $ejecutar=mysql_query($insert);
 	 $_POST['cmd']=0;
  }
 if($_POST['cmd']==1){

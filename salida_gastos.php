@@ -22,7 +22,7 @@ while($row = mysql_fetch_array($res)){
 }
 
 $array_plaza=array(0=>"Ninguna");
-$res=mysql_db_query($base,"SELECT * FROM plazas a WHERE estatus!='I' ORDER BY numero,nombre");
+$res=mysql_query("SELECT * FROM plazas a WHERE estatus!='I' ORDER BY numero,nombre");
 while($row=mysql_fetch_array($res)){
 	$array_plaza[$row['cve']]=$row['numero'].' '.$row['nombre'];
 }
@@ -39,11 +39,11 @@ class PDF1 extends PDF_MC_Table
 $pdf = new PDF1('L','mm','LETTER');
 $pdf->AliasNbPages();
     $array_plaza=array();
-	$res=mysql_db_query($base,"SELECT * FROM plazas");
+	$res=mysql_query("SELECT * FROM plazas");
 	while($row=mysql_fetch_array($res)){
 	$array_plaza[$row['cve']]=$row['nombre'];
 	}
-	$res1=mysql_db_query($base,"SELECT * FROM salida_gastos WHERE cve='".$_POST['reg']."'") or die(mysql_error());
+	$res1=mysql_query("SELECT * FROM salida_gastos WHERE cve='".$_POST['reg']."'") or die(mysql_error());
 	$row=mysql_fetch_array($res1);
 	$pdf->AddPage();
 	//global $row,$array_motivo,$array_plaza;
@@ -169,7 +169,7 @@ $pdf->AliasNbPages();
     /*
 	include('fpdf153/fpdf.php');
 	include("numlet.php");
-	$res=mysql_db_query($base,"SELECT * FROM salida_gastos WHERE cve='".$_POST['reg']."'");
+	$res=mysql_query("SELECT * FROM salida_gastos WHERE cve='".$_POST['reg']."'");
 	$row=mysql_fetch_array($res);
 	$this=new FPDF('P','mm','LETTER');
 	$this->AddPage();
@@ -220,7 +220,7 @@ $pdf->AliasNbPages();
 	$this->Ln();
 	$this->Ln();
 	$this->Ln();
-	/*$rsfirmas=mysql_db_query($base,"SELECT * FROM administradores WHERE depositos='1' AND plaza='".$row['plaza']."' AND fecha_ini<='".$row['fecha']."' AND (fecha_fin>='".$row['fecha']."' OR fecha_fin='0000-00-00')");
+	/*$rsfirmas=mysql_query("SELECT * FROM administradores WHERE depositos='1' AND plaza='".$row['plaza']."' AND fecha_ini<='".$row['fecha']."' AND (fecha_fin>='".$row['fecha']."' OR fecha_fin='0000-00-00')");
 	$numfirmas=mysql_num_rows($rsfirmas);
 	$ancho=190/$numfirmas;
 	$array_puestoadmon=array();

@@ -9,7 +9,7 @@ if($_GET['usuario']>0){
 	$_POST['usuario'] = $_GET['usuario'];
 }
 
-$res = mysql_db_query($base,"SELECT * FROM cat_kyocera ORDER BY descripcion,modelo");
+$res = mysql_query("SELECT * FROM cat_kyocera ORDER BY descripcion,modelo");
 while($row = mysql_fetch_array($res)){
 	$array_productos[$row['cve']] = $row['descripcion'];
 	$array_modelos[$row['cve']] = $row['modelo'];
@@ -60,7 +60,7 @@ function rowc() {
 if($_POST['cmd']=='imprimir'){
 	include('fpdf153/fpdf.php');
 	include("numlet.php");	
-	$res = mysql_db_query($base,"SELECT * FROM cotizacion WHERE cve='".$_POST['reg']."'");
+	$res = mysql_query("SELECT * FROM cotizacion WHERE cve='".$_POST['reg']."'");
 	$row = mysql_fetch_array($res);
 	$suma=0;
 	class FPDF2 extends PDF_MC_Table {
@@ -108,7 +108,7 @@ CP  03800',0,'C');
 	$pdf->SetFont('Arial','',9);
 	$pdf->SetWidths(array(100,50,35));
 	$pdf->SetAligns(array('L','L','R'));
-	$res1=mysql_db_query($base,"SELECT * FROM cotizacion_mov WHERE cvecoti='".$_POST['reg']."'") or die(mysql_error());
+	$res1=mysql_query("SELECT * FROM cotizacion_mov WHERE cvecoti='".$_POST['reg']."'") or die(mysql_error());
 	while($row1=mysql_fetch_array($res1)) {
 		$renglon=array();
 		$renglon[]=$array_productos[$row1['cveproducto']];
@@ -125,7 +125,7 @@ CP  03800',0,'C');
 }
 
 if($_POST['ajax']=="traer_archivos"){
-	$res1=mysql_db_query($base,"SELECT * FROM cat_kyocera_archivos WHERE cveproducto='".$_POST['cveproducto']."'");
+	$res1=mysql_query("SELECT * FROM cat_kyocera_archivos WHERE cveproducto='".$_POST['cveproducto']."'");
 	if(mysql_num_rows($res1)>0){
 		if(mysql_num_rows($res1)==1){
 			echo '1|';
@@ -154,11 +154,11 @@ if($_POST['ajax']=="traer_archivos"){
 $id=0;
 
 if($_POST['cmd']=="cotizar"){
-	mysql_db_query($base,"INSERT cotizacion SET plaza=0,fecha='".date("Y-m-d")."',hora='".date("H:i:s")."',nombre='".$_POST['nombre']."',correo='".$_POST['correo']."',estatus='A',obs='".$_POST['obs']."'");
+	mysql_query("INSERT cotizacion SET plaza=0,fecha='".date("Y-m-d")."',hora='".date("H:i:s")."',nombre='".$_POST['nombre']."',correo='".$_POST['correo']."',estatus='A',obs='".$_POST['obs']."'");
 	$id = mysql_insert_id();
 	foreach($_POST['prod'] as $k=>$v){
 		if($v!="")
-			mysql_db_query($base,"INSERT cotizacion_mov SET plaza=0,cvecoti='$id',cveproducto='$v',cant=1,precio='".$_POST['precio'][$k]."'");
+			mysql_query("INSERT cotizacion_mov SET plaza=0,cvecoti='$id',cveproducto='$v',cant=1,precio='".$_POST['precio'][$k]."'");
 	}	
 	require_once("phpmailer/class.phpmailer.php");
 	$mail = new PHPMailer();
@@ -184,7 +184,7 @@ if($_POST['cmd']=="cotizar"){
 			$html.= '<td align="right">'.number_format($_POST['precio'][$k],2).'</td>';
 			$html.= '</tr>';
 			$suma+=$_POST['precio'][$k];
-			$res1=mysql_db_query($base,"SELECT * FROM cat_kyocera_archivos WHERE cveproducto='".$v."'");
+			$res1=mysql_query("SELECT * FROM cat_kyocera_archivos WHERE cveproducto='".$v."'");
 			while($row1=mysql_fetch_array($res1)){
 				$dat=explode(".",$row1['archivo']);
 				$extension=end($dat);
@@ -284,7 +284,7 @@ echo '
 		echo '
 		<th rowspan="2"><span style="color: blue;cursor: pointer;" onClick="ver_comparar()">Comparar</span></th></tr>
 		<tr bgcolor="#E9F2F8"><th>A4</th><th>A3</th><th>Impresora</th><th>Copiadora</th><th>Escaner</th><th>Fax</th></tr>';
-		$res = mysql_db_query($base,"SELECT * FROM cat_kyocera ORDER BY modelo");
+		$res = mysql_query("SELECT * FROM cat_kyocera ORDER BY modelo");
 		while($row=mysql_fetch_array($res)){
 			rowb();
 			echo '<td><span style="color: blue;cursor: pointer;" onClick="atcr(\'cotizacion.php\',\'\',\'ver_producto\',\''.$row['cve'].'\');">'.$row['modelo'].'</span></td>';
@@ -327,7 +327,7 @@ echo '
 			</ul>
 			<div id="tabs-1">
 			<table width="100%"><tr><td colspan="2"><b>';
-			$res1=mysql_db_query($base,"SELECT * FROM cat_kyocera_especificaciones WHERE cveproducto='".$_POST['reg']."' AND tipo=0");
+			$res1=mysql_query("SELECT * FROM cat_kyocera_especificaciones WHERE cveproducto='".$_POST['reg']."' AND tipo=0");
 			$row1=mysql_fetch_array($res1);
 			echo $row1['texto'];
 			echo '</b><td></tr>';
@@ -336,7 +336,7 @@ echo '
 				echo '<li>'.$row1['texto'].'</li>';
 			}
 			echo '</ul></td><td>';
-			$res = mysql_db_query($base,"SELECT * FROM cat_kyocera_archivos WHERE cveproducto='".$_POST['reg']."' AND tipo=1 LIMIT 1");
+			$res = mysql_query("SELECT * FROM cat_kyocera_archivos WHERE cveproducto='".$_POST['reg']."' AND tipo=1 LIMIT 1");
 			if($row = mysql_fetch_array($res)){
 				$dat=explode(".",$row['archivo']);
 				$extension=end($dat);
@@ -348,7 +348,7 @@ echo '
 		echo '</div>
 			<div id="tabs-2">
 			<ul id="myGallery">';
-			$res = mysql_db_query($base,"SELECT * FROM cat_kyocera_archivos WHERE cveproducto='".$_POST['reg']."' AND tipo=1");
+			$res = mysql_query("SELECT * FROM cat_kyocera_archivos WHERE cveproducto='".$_POST['reg']."' AND tipo=1");
 			if($row = mysql_fetch_array($res)){
 				$dat=explode(".",$row['archivo']);
 				$extension=end($dat);
@@ -359,7 +359,7 @@ echo '
 			}	
 		echo '</ul></div>
 			<div id="tabs-4">';
-			$res = mysql_db_query($base,"SELECT * FROM cat_kyocera WHERE cve='".$_POST['reg']."'");
+			$res = mysql_query("SELECT * FROM cat_kyocera WHERE cve='".$_POST['reg']."'");
 			$row = mysql_fetch_array($res);
 			echo '<table>
 			<tr><td class="tableEnc">General</td></tr>

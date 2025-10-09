@@ -1273,7 +1273,7 @@ echo '';
 	
 	function calculaDias($fecha1,$fecha2){
 		global $base;
-		$rs=mysql_db_query($base,"SELECT to_days('$fecha2')-to_days('$fecha1')");
+		$rs=mysql_query("SELECT to_days('$fecha2')-to_days('$fecha1')");
 		$ro=mysql_fetch_array($rs);
 		return $ro[0]+1;
 	}

@@ -8,11 +8,11 @@ if($_POST['cmd']==2){
 						SET 
 						  password='".$_POST['passnuevo']."',fechacambiopass=NOW()
 						WHERE cve='".$_POST['cveusuario']."' " ;
-	$ejecutar = mysql_db_query($base,$update) or die(mysql_error());
+	$ejecutar = mysql_query($update) or die(mysql_error());
 }
 
 $select=" SELECT * FROM mantenimiento_usuarios WHERE cve='".$_POST['cveusuario']."' ";
-$res=mysql_db_query($base,$select);
+$res=mysql_query($select);
 $row=mysql_fetch_array($res);
 //Menu
 echo '<table>';

@@ -22,7 +22,7 @@ $res = mysql_query("SELECT * FROM usuarios");
 while($row=mysql_fetch_array($res)){
 	$array_usuario[$row['cve']]=$row['usuario'];
 }
-$res=mysql_db_query($base,"SELECT * FROM plazas");
+$res=mysql_query("SELECT * FROM plazas");
 	while($Plaza=mysql_fetch_array($res)){
 		$array_plaza[$row['cve']]=$row['nombre'];
 	}

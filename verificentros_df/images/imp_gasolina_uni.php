@@ -2,22 +2,22 @@
 require('fpdf153/fpdf.php');
 include("main.php");
 include("numlet.php");
-$rsPlaza=mysql_db_query($base,"SELECT * FROM plazas");
+$rsPlaza=mysql_query("SELECT * FROM plazas");
 while($Plaza=mysql_fetch_array($rsPlaza)){
 	$array_plaza[$Plaza['cve']]=$Plaza['nombre'];
 }
 
-$rsUsuario=mysql_db_query($base,"SELECT * FROM usuarios");
+$rsUsuario=mysql_query("SELECT * FROM usuarios");
 while($Usuario=mysql_fetch_array($rsUsuario)){
 	$array_usuario[$Usuario['cve']]=$Usuario['usuario'];
 }
 
-$rsMotivos=mysql_db_query($base,"SELECT * FROM cat_cargos_unidades");
+$rsMotivos=mysql_query("SELECT * FROM cat_cargos_unidades");
 while($Motivo=mysql_fetch_array($rsMotivos)){
 	$array_motivo[$Motivo['cve']]=$Motivo['nombre'];
 }
 
-$rsUnidad=mysql_db_query($base,"SELECT * FROM parque");
+$rsUnidad=mysql_query("SELECT * FROM parque");
 while($Unidad=mysql_fetch_array($rsUnidad)){
 	$array_unidad[$Unidad['cve']]=$Unidad['no_eco'].$Unidad['letra'].' - '.$array_tipo_vehiculo[$Unidad['tipo_vehiculo']];
 	$array_propietario[$Unidad['cve']]=$Unidad['propietario'];
@@ -26,7 +26,7 @@ while($Unidad=mysql_fetch_array($rsUnidad)){
 }
 $array_tipogas=array("Gasolina","Diesel");
 if($_GET['cmd']==30){
-	$res=mysql_db_query($base,"SELECT * FROM parque_abono WHERE cve='".$_GET['abono']."'");
+	$res=mysql_query("SELECT * FROM parque_abono WHERE cve='".$_GET['abono']."'");
 	$row=mysql_fetch_array($res);
 	$impresion='<iframe src="http://localhost/imp.php?folio='.$row['folio'].'&fecha='.fechaNormal($row['fecha']).'&hora='.$row['hora'].'&fecha_rec='.fechaNormal($row['fecha_rec']).'&monto='.$row['monto'].'&unidad='.$array_unidad[$row['unidad']].'&tipo_uni='.$array_tipo_unidad[$row['unidad']].'" width=200 height=200></iframe>';
 	echo '<html><body>'.$impresion.'</body></html>';
@@ -34,7 +34,7 @@ if($_GET['cmd']==30){
 	exit();
 }
 if($_GET['cmd']==20){
-	$res=mysql_db_query($base,"SELECT * FROM parque_abono WHERE cve='".$_GET['abono']."'");
+	$res=mysql_query("SELECT * FROM parque_abono WHERE cve='".$_GET['abono']."'");
 	$row=mysql_fetch_array($res);
 	echo '<table width="100%" style="font-size:12px">';
 	echo '<tr><td colspan="2" align="center"><img src="images/membrete.JPG" width="500" height="100"></td></tr>';
@@ -109,7 +109,7 @@ if($_POST['cmd']==1){
 	if ($_POST['searchplaza']!="all") {$filtro=" AND plaza='".$_POST['searchplaza']."'";}
 	if ($_POST['usuario']!="all") { $filtro.=" AND usuario='".$_POST['usuario']."'"; }
 	$total=0;
-	$res1=mysql_db_query($base,"SELECT usuario,sum(monto) as tot FROM parque_abono WHERE fecha='".fechaLocal()."' AND estatus!='C' $filtro GROUP BY usuario ORDER BY usuario");
+	$res1=mysql_query("SELECT usuario,sum(monto) as tot FROM parque_abono WHERE fecha='".fechaLocal()."' AND estatus!='C' $filtro GROUP BY usuario ORDER BY usuario");
 	while($row1=mysql_fetch_array($res1)){
 		$pdf->Cell(60,5,$array_usuario[$row1['usuario']],0,0,'R');
 		$pdf->Cell(30,5,number_format($row1['tot'],2),0,0,'R');
@@ -125,7 +125,7 @@ if($_POST['cmd']==1){
 	$pdf->Cell(40,5,'Monto',1,0,'C');
 	$pdf->Cell(55,5,'Usuario',1,0,'C');
 	$pdf->SetFont('Arial','',10);
-	$res=mysql_db_query($base,"SELECT * FROM parque_abono WHERE fecha='".fechaLocal()."' $filtro ORDER BY plaza,folio DESC");
+	$res=mysql_query("SELECT * FROM parque_abono WHERE fecha='".fechaLocal()."' $filtro ORDER BY plaza,folio DESC");
 	while ($row=mysql_fetch_array($res)){	
 		$pdf->Ln();
 		$estatus='';
@@ -180,7 +180,7 @@ if($_POST['cmd']==2){
 	if ($_POST['searchplaza']!="all") {$filtro=" AND plaza='".$_POST['searchplaza']."'";}
 	if ($_POST['usuario']!="all") { $filtro.=" AND usuario='".$_POST['usuario']."'"; }
 	$total=0;
-	$res1=mysql_db_query($base,"SELECT usuario,sum(monto) as tot FROM parque_abono WHERE ".$_POST['tipofe'].">='".$_POST['fecha_ini']."' AND ".$_POST['tipofec']."<='".$_POST['fecha_fin']."' AND estatus!='C' $filtro GROUP BY usuario ORDER BY usuario");
+	$res1=mysql_query("SELECT usuario,sum(monto) as tot FROM parque_abono WHERE ".$_POST['tipofe'].">='".$_POST['fecha_ini']."' AND ".$_POST['tipofec']."<='".$_POST['fecha_fin']."' AND estatus!='C' $filtro GROUP BY usuario ORDER BY usuario");
 	while($row1=mysql_fetch_array($res1)){
 		$pdf->Cell(60,5,$array_usuario[$row1['usuario']],0,0,'R');
 		$pdf->Cell(30,5,number_format($row1['tot'],2),0,0,'R');
@@ -196,7 +196,7 @@ if($_POST['cmd']==2){
 	$pdf->Cell(40,5,'Monto',1,0,'C');
 	$pdf->Cell(55,5,'Usuario',1,0,'C');
 	$pdf->SetFont('Arial','',10);
-	$res=mysql_db_query($base,"SELECT * FROM parque_abono WHERE ".$_POST['tipofec'].">='".$_POST['fecha_ini']."' AND ".$_POST['tipofec']."<='".$_POST['fecha_fin']."' $filtro ORDER BY plaza,folio DESC");
+	$res=mysql_query("SELECT * FROM parque_abono WHERE ".$_POST['tipofec'].">='".$_POST['fecha_ini']."' AND ".$_POST['tipofec']."<='".$_POST['fecha_fin']."' $filtro ORDER BY plaza,folio DESC");
 	while ($row=mysql_fetch_array($res)){	
 		$pdf->Ln();
 		$estatus='';
@@ -251,7 +251,7 @@ if($_POST['cmd']==3){
 	if ($_POST['searchplaza']!="all") {$filtro=" AND a.plaza='".$_POST['searchplaza']."'";}
 	//if ($_POST['usuario']!="all") { $filtro.=" AND a.usuario='".$_POST['usuario']."'"; }
 	$total=0;
-	$res=mysql_db_query($base,"SELECT a.plaza,c.motivo,sum(b.monto) as abonos 
+	$res=mysql_query("SELECT a.plaza,c.motivo,sum(b.monto) as abonos 
 				FROM parque_abono as a
 				INNER JOIN parque_abonomov as b ON (b.abono=a.cve)
 				INNER JOIN cargos_parque as c ON (c.cve=b.cargo)
@@ -275,7 +275,7 @@ if($_POST['cmd']==3){
 			WHERE a.fecha>='".$_POST['fecha_ini']."' AND a.fecha<='".$_POST['fecha_fin']."'";
 	if ($_POST['searchplaza']!="all") { $select.=" AND a.plaza='".$_POST['searchplaza']."'"; $filtro=" AND a.plaza='".$_POST['searchplaza']."'";}
 	$select.=" GROUP BY a.plaza";
-	$rsabonos=mysql_db_query($base,$select);
+	$rsabonos=mysql_query($select);
 	$Abono=mysql_fetch_array($rsabonos);
 	$pdf->Ln();
 	$pdf->Cell(25,5,' ',0,0,'C');
@@ -294,7 +294,7 @@ if($_POST['cmd']==3){
 if($_POST['cmd']==10){
 $tamano=array(260.0,134.5);
 $pdf=new FPDF('P','mm',$tamano);
-$res=mysql_db_query($base,"SELECT * FROM parque_abono WHERE cve='".$_POST['reg']."'");
+$res=mysql_query("SELECT * FROM parque_abono WHERE cve='".$_POST['reg']."'");
 $row=mysql_fetch_array($res);
 $pdf->AddPage();
 $pdf->SetY(25);
@@ -319,7 +319,7 @@ exit();
 
 $tamano=array(75,100);
 $pdf=new FPDF('P','mm',$tamano);
-$res=mysql_db_query($base,"SELECT * FROM parque_gasolina WHERE cve='".$_POST['reg']."'");
+$res=mysql_query("SELECT * FROM parque_gasolina WHERE cve='".$_POST['reg']."'");
 $row=mysql_fetch_array($res);
 $pdf->SetLeftMargin(5);
 $pdf->AddPage();

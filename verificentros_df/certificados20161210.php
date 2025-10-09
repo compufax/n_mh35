@@ -260,13 +260,13 @@ if($_POST['cmd']==102) {
 }	
 
 if($_POST['cmd']==101){
-	$res=mysql_db_query($base,"SELECT * FROM plazas");
+	$res=mysql_query("SELECT * FROM plazas");
 	while($Plaza=mysql_fetch_array($res)){
 		$array_plaza[$row['cve']]=$row['nombre'];
 	}
 	include('../fpdf153/fpdf.php');
 	include("numlet.php");
-	$res=mysql_db_query($base,"SELECT * FROM certificados WHERE plaza='".$_POST['plazausuario']."' AND cve='".$_POST['reg']."'");
+	$res=mysql_query("SELECT * FROM certificados WHERE plaza='".$_POST['plazausuario']."' AND cve='".$_POST['reg']."'");
 	$row=mysql_fetch_array($res);
 	$pdf=new FPDF('P','mm','LETTER');
 	$pdf->AddPage();
@@ -306,7 +306,7 @@ if($_POST['cmd']==101){
 if($_POST['cmd']==100){
 	include('../fpdf153/fpdf.php');
 	include("numlet.php");	
-	$res=mysql_db_query($base,"SELECT * FROM plazas");
+	$res=mysql_query("SELECT * FROM plazas");
 	while($Plaza=mysql_fetch_array($res)){
 		$array_plaza[$row['cve']]=$row['nombre'];
 	}

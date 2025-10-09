@@ -1,7 +1,7 @@
 <?php 
 
 include ("main.php"); 
-$res=mysql_db_query($base,"SELECT a.* FROM plazas a INNER JOIN datosempresas b ON a.cve = b.plaza ORDER BY b.localidad_id, a.lista, a.numero");
+$res=mysql_query("SELECT a.* FROM plazas a INNER JOIN datosempresas b ON a.cve = b.plaza ORDER BY b.localidad_id, a.lista, a.numero");
 while($Plaza=mysql_fetch_array($res)){
 	$array_plaza[$Plaza['cve']]=$Plaza['numero'].' '.$Plaza['nombre'];
 }
@@ -53,7 +53,7 @@ if($_POST['cmd']==101){
 	$datos = explode('|',$_POST['reg']);
 	include('fpdf153/fpdf.php');
 	include("numlet.php");
-	$res=mysql_db_query($base,"SELECT * FROM devolucion_ajuste WHERE plaza='".$datos[0]."' AND cve='".$datos[1]."'");
+	$res=mysql_query("SELECT * FROM devolucion_ajuste WHERE plaza='".$datos[0]."' AND cve='".$datos[1]."'");
 	$row=mysql_fetch_array($res);
 	$pdf=new FPDF('P','mm','LETTER');
 	$pdf->AddPage();

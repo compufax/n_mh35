@@ -1,1 +1,253 @@
-<?phpinclude("main.php");require('../fpdf153/fpdf.php');include("../numlet.php");$res = mysql_query("SELECT * FROM usuarios");while($row=mysql_fetch_array($res)){	$array_usuario[$row['cve']]=$row['usuario'];}$rsPuesto=mysql_db_query($base,"SELECT * FROM puestos");while($Puesto=mysql_fetch_array($rsPuesto)){	$array_puesto[$Puesto['cve']]=$Puesto['nombre'];}$result=mysql_query("select * from cheques where cve='".$_POST['reg']."' ");$row=mysql_fetch_array($result);$result2=mysql_query("select nombre from beneficiarios_chequera where cve='".$row['beneficiario']."' ");$row2=mysql_fetch_array($result2);$result3=mysql_query("select * from cuentas where cve='".$row['cuenta']."' ");$row3=mysql_fetch_array($result3);$res4=mysql_query("select nombre from motivos where cve='".$row['motivo']."' ");$row4=mysql_fetch_array($res4);/*** Creamos el objeto y opciones para la pagina***/$pdf=new PDF_MC_Table('P','mm','A4');$pdf->Open();/*$res1=mysql_query("SELECT * FROM ".$pre."administrativos WHERE tipo='1' AND fecha_ini<='".$row['fechac']."' ORDER BY fecha_ini DESC");$row1=mysql_fetch_array($res1);$presidente=$row1['nombre'];$res1=mysql_query("SELECT * FROM ".$pre."administrativos WHERE tipo='2' AND fecha_ini<='".$row['fechac']."' ORDER BY fecha_ini DESC");$row1=mysql_fetch_array($res1);$secretario=$row1['nombre'];$res1=mysql_query("SELECT * FROM ".$pre."administrativos WHERE tipo='3' AND fecha_ini<='".$row['fechac']."' ORDER BY fecha_ini DESC");$row1=mysql_fetch_array($res1);$tesorero=$row1['nombre'];*/$rsfirmas=mysql_db_query($base,"SELECT * FROM administradores WHERE polizas='1' AND plaza='".$row['plaza']."' AND fecha_ini<='".$row['fecha']."' AND (fecha_fin>='".$row['fecha']."' OR fecha_fin='0000-00-00')");$numfirmas=mysql_num_rows($rsfirmas);if($numfirmas==0)	$ancho=200;else	$ancho=200/$numfirmas;$array_puestoadmon=array();$array_admon=array();$i=0;$pdf->SetFont('Arial','U',9);while($Firmas=mysql_fetch_array($rsfirmas)){	$array_admon[$i]=$Firmas['nombre'];	$array_puestoadmon[$i]=$array_puesto[$Firmas['puesto']];	$i++;}if($i==0){	$array_admon[$i]="No hay Firmas";	$array_puestoadmon[$i]="";}$pdf->AddPage();$pdf->SetFont('Arial','',8);$pdf->SetFillColor(217, 249, 238);$pdf->Ln(10);//$pdf->Rect(5,5,200,42,"DF"); //( x, y, width 0=todo el ancho, height )//fecha$pdf->SetFont('Arial','B',14);$pdf->Cell(95,5," ",0,0,'C',0);	$pdf->SetFont('Arial','',10);	$datos=explode(",",$row3['coorfecha']);$pdf->SetXY($datos[0],$datos[1]);$pdf->Cell(10,5,fecha_letra($row['fecha']),0,0,'L',0);//nombre e importe$pdf->Ln();$pdf->Ln();$pdf->Ln(2.5);if($row["estatus"]!=1){	$pdf->SetFont('Arial','',10);}else{	$pdf->SetFont('Arial','',10);	$row['monto']=0;}$datos=explode(",",$row3['coorbeneficiario']);$pdf->SetXY($datos[0],$datos[1]);$pdf->Cell(10,5,$row2['nombre'],0,0,'L',0);$pdf->SetFont('Arial','',10);$datos=explode(",",$row3['coormonto']);$pdf->SetXY($datos[0],$datos[1]);$pdf->Cell(10,5,number_format($row['monto'],'2','.',','),0,0,'L',0);//cantidad con letra$pdf->Ln();$pdf->Ln(2.5);$datos=explode(",",$row3['coormontoletra']);$pdf->SetXY($datos[0],$datos[1]);$pdf->Cell(180,5,numlet($row['monto']),0,0,'L',0);//cuenta y cheque $pdf->Ln();$pdf->Ln();$totalpolizas=1;if($row3['copia']==1) ++$totalpolizas;for($h=1;$h<=$totalpolizas;$h++) {		$pdf->AddPage();	$pdf->SetFont('Arial','',8);	$pdf->SetFillColor(217, 249, 238);	$pdf->Rect(5,5,200,42,"DF"); //( x, y, width 0=todo el ancho, height )	//si es cheque cancelado	$pdf->SetFont('Arial','B',18);	$pdf->SetTextColor(255,0,0);	if($row['estatus']==2) 		$pdf->Cell(50,7,"CANCELADO",0,0,'L',1);		$pdf->SetTextColor(0,0,0);	//fecha	$pdf->SetFont('Arial','B',14);	if($h>1) 		$pdf->Cell(50,5,"COPIA",0,0,'C',1);	else 		$pdf->Cell(50,5," ",0,0,'C',1);		$pdf->SetFont('Arial','',8);		$pdf->Cell(90,5,fecha_letra($row['fecha_corte']),0,0,'R',1);	//nombre e importe	$pdf->Ln();	$pdf->Ln();	$pdf->Cell(120,5,$row2['nombre'],0,0,'C',1);	$pdf->Cell(70,5,number_format($row['monto'],'2','.',','),0,0,'R',1);	//cantidad con letra	$pdf->Ln();	$pdf->Ln();	$pdf->Cell(190,5,numlet($row['monto']),0,0,'C',1);	//cuenta y cheque 	$pdf->Ln();	$pdf->Ln();	$pdf->Cell(60,5,"CUENTA: ".$row3['cuenta'],0,0,'L',1);	$pdf->Cell(70,5,"",0,0,'C',1);	$pdf->Cell(60,5,"CHEQUE: ".$row['folio'],0,0,'R',1);	//encabezados concepto y firma 	$pdf->Ln();	$pdf->Ln();	$pdf->SetX(5);	$pdf->Cell(135,5,"MOTIVO: ".$row4['nombre'],0,0,'C',0);		$pdf->Cell(65,5,"FIRMA DE RECIBIDO: ",0,0,'C',0);	//textos concepto y firma	$pdf->Ln();	$pdf->Cell(135,5,"CONCEPTO: ",0,0,'C',0);	$Y=$pdf->GetY()-5;	$pdf->SetX(5);	if($h==3) {		$pdf->SetFont('Arial','B',12);		$pdf->MultiCell(133,5,"\n\nGASTOS POR COMPROBAR",0,'C',0);	}		else{ 			$pdf->MultiCell(133,5,"\n\n".trim($row['concepto']),0,'C',0);	}	$pdf->SetFont('Arial','',8);			//rectangulos grandes de concepto y firma	$pdf->Rect(5,$Y,133,35,"D"); //( x, y, width 0=todo el ancho, height )	$pdf->Rect(140,$Y,65,35,"D"); //( x, y, width 0=todo el ancho, height )	$pdf->Ln();	//rows	$pdf->SetWidths(array(30,30,50,30,30,30));	$Y=$pdf->GetY()+23;	$pdf->SetY($Y);	$pdf->SetX(5);	$pdf->RowHeaderGetColor(array("CUENTA","SUBCUENTA","NOMBRE","PARCIAL","DEBE","HABER"),array(255, 153, 51));		for($i=0;$i<11;$i++) {		$pdf->SetX(5);		if(fmod($i,2)==0) 			$color=array(255,255,255);		else			$color=array(255,255,153);		$pdf->RowGetColor(array($row['cuenta'.$i]." ",$row['subcuenta'.$i]." ",$row['nombre'.$i]." ",$row['parcial'.$i]." ",$row['debe'.$i]." ",$row['haber'.$i]." "),$color);	}	//presidente, tesorero y secretario	$pdf->SetX(5);	$pdf->SetFillColor(255,255,153);	foreach($array_admon as $v) $pdf->Cell($ancho,5,$v,1,0,'C',1);	/*$pdf->Cell(65,5,$presidente,1,0,'C',1);	$pdf->Cell(70,5,$tesorero,1,0,'C',1);	$pdf->Cell(65,5,$secretario,1,1,'C',1);*/	$pdf->Ln();	$pdf->SetX(5);	$pdf->SetFillColor(255,255,255);	/*$pdf->Cell(65,5,"PRESIDENTE",1,0,'C',1);	$pdf->Cell(70,5,"TESORERO",1,0,'C',1);	$pdf->Cell(65,5,"SECRETARIO",1,1,'C',1);*/	foreach($array_puestoadmon as $v) $pdf->Cell($ancho,5,$v,1,0,'C',1);	$pdf->Ln();	for($i=1;$i<5;$i++) {		$pdf->SetX(5);		if(fmod($i,2)==0) 			$color=array(255,255,255);		else			$color=array(255,255,153);		$pdf->RowGetColor(array(" "," "," "," "," "," "),$color);	}	//presidente, tesorero y secretario	/*$pdf->SetX(5);	$pdf->SetFillColor(255,255,153);	$pdf->Cell(65,5,"",1,0,'C',1);	$pdf->Cell(70,5," ",1,0,'C',1);	$pdf->Cell(65,5,"",1,1,'C',1);	$pdf->SetX(5);	$pdf->SetFillColor(255,255,255);	$pdf->Cell(65,5,"",1,0,'C',1);	$pdf->Cell(70,5," ",1,0,'C',1);	$pdf->Cell(65,5,"",1,1,'C',1);	*/	for($i=1;$i<5;$i++) {		$pdf->SetX(5);		if(fmod($i,2)==0) 			$color=array(255,255,255);		else			$color=array(255,255,153);		$pdf->RowGetColor(array(" "," "," "," "," "," "),$color);	}		//firmas en pie de pagina	//encabezados concepto y firma 	$pdf->Ln();	$pdf->SetX(5);	$pdf->Cell(66,5,"ELABORADO POR: ",0,0,'L',0);	$pdf->SetX(72);	$pdf->Cell(65,5,"AUTORIZADO POR: ",0,0,'L',0);	$pdf->SetX(139);	$pdf->Cell(66,5,"POLIZA NUM:: ",0,0,'L',0);	//textos concepto y firma	$pdf->Ln();	$Y=$pdf->GetY()-5;	$pdf->SetX(5);	$pdf->Cell(66,5,$array_usuario[$row['usuario']],0,0,'C',0);	$pdf->Cell(65,5," ",0,0,'C',0);	$pdf->Cell(66,5," ",0,0,'C',0);	//rectangulos grandes de concepto y firma	$pdf->Rect(5,$Y,66,20,"D"); //( x, y, width 0=todo el ancho, height )	$pdf->Rect(72,$Y,66,20,"D"); //( x, y, width 0=todo el ancho, height )	$pdf->Rect(139,$Y,66,20,"D"); //( x, y, width 0=todo el ancho, height )}$pdf->Output();	?>
+<?phpmysql_query(mysql_query(
+include("main.php");
+require('../fpdf153/fpdf.php');
+include("../numlet.php");
+$res = mysql_query("SELECT * FROM usuarios");
+while($row=mysql_fetch_array($res)){
+	$array_usuario[$row['cve']]=$row['usuario'];
+}
+$rsPuesto=mysql_db_query($base,"SELECT * FROM puestos");
+while($Puesto=mysql_fetch_array($rsPuesto)){
+	$array_puesto[$Puesto['cve']]=$Puesto['nombre'];
+}
+$result=mysql_query("select * from cheques where cve='".$_POST['reg']."' ");
+$row=mysql_fetch_array($result);
+$result2=mysql_query("select nombre from beneficiarios_chequera where cve='".$row['beneficiario']."' ");
+$row2=mysql_fetch_array($result2);
+$result3=mysql_query("select * from cuentas where cve='".$row['cuenta']."' ");
+$row3=mysql_fetch_array($result3);
+
+$res4=mysql_query("select nombre from motivos where cve='".$row['motivo']."' ");
+$row4=mysql_fetch_array($res4);
+/*** Creamos el objeto y opciones para la pagina***/
+$pdf=new PDF_MC_Table('P','mm','A4');
+$pdf->Open();
+/*$res1=mysql_query("SELECT * FROM ".$pre."administrativos WHERE tipo='1' AND fecha_ini<='".$row['fechac']."' ORDER BY fecha_ini DESC");
+$row1=mysql_fetch_array($res1);
+$presidente=$row1['nombre'];
+$res1=mysql_query("SELECT * FROM ".$pre."administrativos WHERE tipo='2' AND fecha_ini<='".$row['fechac']."' ORDER BY fecha_ini DESC");
+$row1=mysql_fetch_array($res1);
+$secretario=$row1['nombre'];
+$res1=mysql_query("SELECT * FROM ".$pre."administrativos WHERE tipo='3' AND fecha_ini<='".$row['fechac']."' ORDER BY fecha_ini DESC");
+$row1=mysql_fetch_array($res1);
+$tesorero=$row1['nombre'];*/
+
+$rsfirmas=mysql_db_query($base,"SELECT * FROM administradores WHERE polizas='1' AND plaza='".$row['plaza']."' AND fecha_ini<='".$row['fecha']."' AND (fecha_fin>='".$row['fecha']."' OR fecha_fin='0000-00-00')");
+$numfirmas=mysql_num_rows($rsfirmas);
+if($numfirmas==0)
+	$ancho=200;
+else
+	$ancho=200/$numfirmas;
+$array_puestoadmon=array();
+$array_admon=array();
+$i=0;
+$pdf->SetFont('Arial','U',9);
+while($Firmas=mysql_fetch_array($rsfirmas)){
+
+	$array_admon[$i]=$Firmas['nombre'];
+	$array_puestoadmon[$i]=$array_puesto[$Firmas['puesto']];
+	$i++;
+}
+if($i==0){
+	$array_admon[$i]="No hay Firmas";
+	$array_puestoadmon[$i]="";
+}
+
+$pdf->AddPage();
+
+$pdf->SetFont('Arial','',8);
+
+$pdf->SetFillColor(217, 249, 238);
+
+$pdf->Ln(10);
+
+//$pdf->Rect(5,5,200,42,"DF"); //( x, y, width 0=todo el ancho, height )
+
+//fecha
+
+$pdf->SetFont('Arial','B',14);
+
+$pdf->Cell(95,5," ",0,0,'C',0);	
+
+$pdf->SetFont('Arial','',10);	
+$datos=explode(",",$row3['coorfecha']);
+$pdf->SetXY($datos[0],$datos[1]);
+$pdf->Cell(10,5,fecha_letra($row['fecha']),0,0,'L',0);
+
+//nombre e importe
+
+$pdf->Ln();
+$pdf->Ln();
+$pdf->Ln(2.5);
+
+if($row["estatus"]!=1){
+	$pdf->SetFont('Arial','',10);
+}
+else{
+	$pdf->SetFont('Arial','',10);
+	$row['monto']=0;
+}
+
+$datos=explode(",",$row3['coorbeneficiario']);
+$pdf->SetXY($datos[0],$datos[1]);
+$pdf->Cell(10,5,$row2['nombre'],0,0,'L',0);
+$pdf->SetFont('Arial','',10);
+$datos=explode(",",$row3['coormonto']);
+$pdf->SetXY($datos[0],$datos[1]);
+$pdf->Cell(10,5,number_format($row['monto'],'2','.',','),0,0,'L',0);
+
+//cantidad con letra
+
+$pdf->Ln();
+$pdf->Ln(2.5);
+$datos=explode(",",$row3['coormontoletra']);
+$pdf->SetXY($datos[0],$datos[1]);
+$pdf->Cell(180,5,numlet($row['monto']),0,0,'L',0);
+
+//cuenta y cheque 
+
+$pdf->Ln();
+
+$pdf->Ln();
+
+$totalpolizas=1;
+if($row3['copia']==1) ++$totalpolizas;
+for($h=1;$h<=$totalpolizas;$h++) {	
+	$pdf->AddPage();
+	$pdf->SetFont('Arial','',8);
+	$pdf->SetFillColor(217, 249, 238);
+	$pdf->Rect(5,5,200,42,"DF"); //( x, y, width 0=todo el ancho, height )
+	//si es cheque cancelado
+	$pdf->SetFont('Arial','B',18);
+	$pdf->SetTextColor(255,0,0);
+	if($row['estatus']==2) 
+		$pdf->Cell(50,7,"CANCELADO",0,0,'L',1);	
+	$pdf->SetTextColor(0,0,0);
+	//fecha
+	$pdf->SetFont('Arial','B',14);
+	if($h>1) 
+		$pdf->Cell(50,5,"COPIA",0,0,'C',1);
+	else 
+		$pdf->Cell(50,5," ",0,0,'C',1);	
+	$pdf->SetFont('Arial','',8);	
+	$pdf->Cell(90,5,fecha_letra($row['fecha_corte']),0,0,'R',1);
+	//nombre e importe
+	$pdf->Ln();
+	$pdf->Ln();
+	$pdf->Cell(120,5,$row2['nombre'],0,0,'C',1);
+	$pdf->Cell(70,5,number_format($row['monto'],'2','.',','),0,0,'R',1);
+	//cantidad con letra
+	$pdf->Ln();
+	$pdf->Ln();
+	$pdf->Cell(190,5,numlet($row['monto']),0,0,'C',1);
+	//cuenta y cheque 
+	$pdf->Ln();
+	$pdf->Ln();
+	$pdf->Cell(60,5,"CUENTA: ".$row3['cuenta'],0,0,'L',1);
+	$pdf->Cell(70,5,"",0,0,'C',1);
+	$pdf->Cell(60,5,"CHEQUE: ".$row['folio'],0,0,'R',1);
+	//encabezados concepto y firma 
+	$pdf->Ln();
+	$pdf->Ln();
+	$pdf->SetX(5);
+	$pdf->Cell(135,5,"MOTIVO: ".$row4['nombre'],0,0,'C',0);
+	
+	$pdf->Cell(65,5,"FIRMA DE RECIBIDO: ",0,0,'C',0);
+	//textos concepto y firma
+	$pdf->Ln();
+	$pdf->Cell(135,5,"CONCEPTO: ",0,0,'C',0);
+	$Y=$pdf->GetY()-5;
+	$pdf->SetX(5);
+	if($h==3) {
+		$pdf->SetFont('Arial','B',12);
+		$pdf->MultiCell(133,5,"\n\nGASTOS POR COMPROBAR",0,'C',0);
+	}	
+	else{ 	
+		$pdf->MultiCell(133,5,"\n\n".trim($row['concepto']),0,'C',0);
+	}
+	$pdf->SetFont('Arial','',8);		
+	//rectangulos grandes de concepto y firma
+	$pdf->Rect(5,$Y,133,35,"D"); //( x, y, width 0=todo el ancho, height )
+	$pdf->Rect(140,$Y,65,35,"D"); //( x, y, width 0=todo el ancho, height )
+	$pdf->Ln();
+	//rows
+	$pdf->SetWidths(array(30,30,50,30,30,30));
+	$Y=$pdf->GetY()+23;
+	$pdf->SetY($Y);
+	$pdf->SetX(5);
+	$pdf->RowHeaderGetColor(array("CUENTA","SUBCUENTA","NOMBRE","PARCIAL","DEBE","HABER"),array(255, 153, 51));
+	
+	for($i=0;$i<11;$i++) {
+		$pdf->SetX(5);
+		if(fmod($i,2)==0) 
+			$color=array(255,255,255);
+		else
+			$color=array(255,255,153);
+		$pdf->RowGetColor(array($row['cuenta'.$i]." ",$row['subcuenta'.$i]." ",$row['nombre'.$i]." ",$row['parcial'.$i]." ",$row['debe'.$i]." ",$row['haber'.$i]." "),$color);
+	}
+	//presidente, tesorero y secretario
+	$pdf->SetX(5);
+	$pdf->SetFillColor(255,255,153);
+	foreach($array_admon as $v) $pdf->Cell($ancho,5,$v,1,0,'C',1);
+	/*$pdf->Cell(65,5,$presidente,1,0,'C',1);
+	$pdf->Cell(70,5,$tesorero,1,0,'C',1);
+	$pdf->Cell(65,5,$secretario,1,1,'C',1);*/
+	$pdf->Ln();
+	$pdf->SetX(5);
+	$pdf->SetFillColor(255,255,255);
+	/*$pdf->Cell(65,5,"PRESIDENTE",1,0,'C',1);
+	$pdf->Cell(70,5,"TESORERO",1,0,'C',1);
+	$pdf->Cell(65,5,"SECRETARIO",1,1,'C',1);*/
+	foreach($array_puestoadmon as $v) $pdf->Cell($ancho,5,$v,1,0,'C',1);
+	$pdf->Ln();
+	for($i=1;$i<5;$i++) {
+		$pdf->SetX(5);
+		if(fmod($i,2)==0) 
+			$color=array(255,255,255);
+		else
+			$color=array(255,255,153);
+		$pdf->RowGetColor(array(" "," "," "," "," "," "),$color);
+	}
+	//presidente, tesorero y secretario
+	/*$pdf->SetX(5);
+	$pdf->SetFillColor(255,255,153);
+	$pdf->Cell(65,5,"",1,0,'C',1);
+	$pdf->Cell(70,5," ",1,0,'C',1);
+	$pdf->Cell(65,5,"",1,1,'C',1);
+	$pdf->SetX(5);
+	$pdf->SetFillColor(255,255,255);
+	$pdf->Cell(65,5,"",1,0,'C',1);
+	$pdf->Cell(70,5," ",1,0,'C',1);
+	$pdf->Cell(65,5,"",1,1,'C',1);	*/
+	for($i=1;$i<5;$i++) {
+		$pdf->SetX(5);
+		if(fmod($i,2)==0) 
+			$color=array(255,255,255);
+		else
+			$color=array(255,255,153);
+		$pdf->RowGetColor(array(" "," "," "," "," "," "),$color);
+	}
+	
+	//firmas en pie de pagina
+	//encabezados concepto y firma 
+	$pdf->Ln();
+	$pdf->SetX(5);
+	$pdf->Cell(66,5,"ELABORADO POR: ",0,0,'L',0);
+	$pdf->SetX(72);
+	$pdf->Cell(65,5,"AUTORIZADO POR: ",0,0,'L',0);
+	$pdf->SetX(139);
+	$pdf->Cell(66,5,"POLIZA NUM:: ",0,0,'L',0);
+	//textos concepto y firma
+	$pdf->Ln();
+	$Y=$pdf->GetY()-5;
+	$pdf->SetX(5);
+	$pdf->Cell(66,5,$array_usuario[$row['usuario']],0,0,'C',0);
+	$pdf->Cell(65,5," ",0,0,'C',0);
+	$pdf->Cell(66,5," ",0,0,'C',0);
+	//rectangulos grandes de concepto y firma
+	$pdf->Rect(5,$Y,66,20,"D"); //( x, y, width 0=todo el ancho, height )
+	$pdf->Rect(72,$Y,66,20,"D"); //( x, y, width 0=todo el ancho, height )
+	$pdf->Rect(139,$Y,66,20,"D"); //( x, y, width 0=todo el ancho, height )
+}
+$pdf->Output();	
+?>

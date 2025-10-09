@@ -2,13 +2,13 @@
 include ("main.php"); 
 /*** ARREGLOS ***********************************************************/
 
-$rsUsuario=mysql_db_query($base,"SELECT * FROM usuarios");
+$rsUsuario=mysql_query("SELECT * FROM usuarios");
 while($Usuario=mysql_fetch_array($rsUsuario)){
 	$array_usuario[$Usuario['cve']]=$Usuario['usuario'];
 }
 
 
-$rsconductor=mysql_db_query($base,"SELECT * FROM depositantes WHERE plaza = '".$_POST['plazausuario']."'");
+$rsconductor=mysql_query("SELECT * FROM depositantes WHERE plaza = '".$_POST['plazausuario']."'");
 while($Conductor=mysql_fetch_array($rsconductor)){
 	$array_depositante[$Conductor['cve']]=$Conductor['nombre'];
 }
@@ -45,7 +45,7 @@ if($_POST['cmd']==100){
 	$totales=array();
 		for($i=0;$i<count($_POST['depositantes']);$i++){
 		  $select= " SELECT * FROM depositante WHERE plaza='".$_POST['plazausuario']."' AND cve='".$_POST['depositantes'][$i]."' ";
-	      $res=mysql_db_query($base,$select);
+	      $res=mysql_query($select);
 		  $row=mysql_fetch_array($res);
          // 
 	     // $pdf->Ln();
@@ -88,7 +88,7 @@ if($_POST['cmd']==102){
 	
 	$i=0;
 	for($i=0;$i<count($_POST['depositantes']);$i++){
-		$res=mysql_db_query($base,"SELECT * FROM depositantes WHERE plaza = '".$_POST['plazausuario']."' AND cve='".$_POST['depositantes'][$i]."'");
+		$res=mysql_query("SELECT * FROM depositantes WHERE plaza = '".$_POST['plazausuario']."' AND cve='".$_POST['depositantes'][$i]."'");
 		$row=mysql_fetch_array($res);
 		$cveori=$row['cve_ori'];
 		$pdf->SetFont('Arial','',13);
@@ -117,7 +117,7 @@ if($_POST['cmd']==102){
 		$pdf->Ln();
 		while($fecha<=$_POST['fecha_fin']){
 			
-			$res=mysql_db_query($base,"SELECT * FROM cobro_engomado WHERE depositante='".$_POST['depositantes'][$i]."' AND estatus!='C' AND tipo_pago IN (2,6) AND fecha='$fecha'");
+			$res=mysql_query("SELECT * FROM cobro_engomado WHERE depositante='".$_POST['depositantes'][$i]."' AND estatus!='C' AND tipo_pago IN (2,6) AND fecha='$fecha'");
 			while($row=mysql_fetch_array($res)){
 				if($row['tipo_pago']==6){
 					$abono+=$row['monto'];
@@ -161,7 +161,7 @@ if($_POST['cmd']==102){
 if($_POST['cmd']==101){
 	echo '<html><body>';
 	
-	$res=mysql_db_query($base,"SELECT * FROM depositantes WHERE plaza = '".$_POST['plazausuario']."' AND cve=".$_POST['reg']);
+	$res=mysql_query("SELECT * FROM depositantes WHERE plaza = '".$_POST['plazausuario']."' AND cve=".$_POST['reg']);
 	$row=mysql_fetch_array($res);
 	$cveori=$row['cve_ori'];
 	echo '<table align="center">';
@@ -187,7 +187,7 @@ if($_POST['cmd']==101){
 	echo '<td align="left">&nbsp;</td>';
 	echo '</tr>';
 	while($fecha<=$_POST['fecha_fin']){
-		$res=mysql_db_query($base,"SELECT * FROM cobro_engomado WHERE depositante='".$_POST['reg']."' AND estatus!='C' AND tipo_pago IN (2,6) AND fecha='$fecha'");
+		$res=mysql_query("SELECT * FROM cobro_engomado WHERE depositante='".$_POST['reg']."' AND estatus!='C' AND tipo_pago IN (2,6) AND fecha='$fecha'");
 		while($row=mysql_fetch_array($res)){
 			if($row['tipo_pago']==6){
 				$abono+=abs($row['monto']);
@@ -239,7 +239,7 @@ if($_POST['ajax']==1){
 	if ($_POST['nombre']!="") { $select.=" AND nombre LIKE '%".$_POST['nombre']."%'"; }
 	if ($_POST['tipo']>0) { $select.=" AND tipo = '".$_POST['tipo']."'"; }
 	$select.=" ORDER BY nombre";
-	$res=mysql_db_query($base,$select);
+	$res=mysql_query($select);
 	if(mysql_num_rows($rsconductor)>0) {
 		echo '<table width="100%" border="0" cellpadding="4" cellspacing="1" class="">';
 		echo '<tr><td bgcolor="#E9F2F8" colspan="10">'.mysql_num_rows($rsconductor).' Registro(s)</td></tr>';
@@ -294,7 +294,7 @@ if($_POST['ajax']==1){
 
 if($_POST['ajax']==2){
 	
-	$res=mysql_db_query($base,"SELECT * FROM depositantes WHERE plaza='".$_POST['plazausuario']."' AND cve=".$_POST['depositante']);
+	$res=mysql_query("SELECT * FROM depositantes WHERE plaza='".$_POST['plazausuario']."' AND cve=".$_POST['depositante']);
 	$row=mysql_fetch_array($res);
 	echo '<table width="100%">';
 	echo '<tr><td class="tableEnc">Estado de Cuenta del Depositante '.$row['nombre'].'</td></tr>';
@@ -319,7 +319,7 @@ if($_POST['ajax']==2){
 	echo '</tr>';
 	$array_detalle = array();
 	while($fecha<=$_POST['fecha_fin']){
-		$res=mysql_db_query($base,"SELECT * FROM cobro_engomado WHERE depositante='".$_POST['depositante']."' AND estatus!='C' AND tipo_pago IN (2,6) AND fecha='$fecha'");
+		$res=mysql_query("SELECT * FROM cobro_engomado WHERE depositante='".$_POST['depositante']."' AND estatus!='C' AND tipo_pago IN (2,6) AND fecha='$fecha'");
 		while($row=mysql_fetch_array($res)){
 			if($row['tipo_venta']==2){
 				$row['placa'] = '<font color="YELLOW">'.$row['placa'].'</font>';
@@ -368,7 +368,7 @@ if($_POST['ajax']==2){
 			$x++;
 		}
 		
-		$res=mysql_db_query($base,"SELECT a.* FROM recuperacion_certificado a INNER JOIN cobro_engomado b on b.plaza = a.plaza AND b.cve = a.ticket WHERE a.estatus!='C' AND a.fecha='$fecha' AND b.depositante='".$_POST['depositante']."' AND b.estatus!='C' AND b.tipo_pago IN (2,6)");
+		$res=mysql_query("SELECT a.* FROM recuperacion_certificado a INNER JOIN cobro_engomado b on b.plaza = a.plaza AND b.cve = a.ticket WHERE a.estatus!='C' AND a.fecha='$fecha' AND b.depositante='".$_POST['depositante']."' AND b.estatus!='C' AND b.tipo_pago IN (2,6)");
 		while($row=mysql_fetch_array($res)){
 			if($row['tipo_pago']==6){
 				$array_detalle[$fecha.' '.$row['hora'].'_2_'.$row['cve']]['cargo'] = abs($row['recuperacion']);
@@ -409,7 +409,7 @@ if($_POST['ajax']==2){
 			$x++;
 		}
 		
-		$res=mysql_db_query($base,"SELECT * FROM pagos_caja WHERE depositante='".$_POST['depositante']."' AND estatus!='C' AND tipo_pago IN (2,6) AND fecha='$fecha'");
+		$res=mysql_query("SELECT * FROM pagos_caja WHERE depositante='".$_POST['depositante']."' AND estatus!='C' AND tipo_pago IN (2,6) AND fecha='$fecha'");
 		while($row=mysql_fetch_array($res)){
 			if($row['tipo_pago']==6){
 				$vales = '';
@@ -454,7 +454,7 @@ if($_POST['ajax']==2){
 			$x++;
 		}
 
-		$res=mysql_db_query($base,"SELECT * FROM ajuste_saldos WHERE depositante='".$_POST['depositante']."' AND estatus!='C' AND fecha='$fecha'");
+		$res=mysql_query("SELECT * FROM ajuste_saldos WHERE depositante='".$_POST['depositante']."' AND estatus!='C' AND fecha='$fecha'");
 		while($row=mysql_fetch_array($res)){
 			if($row['monto']>0){
 				$array_detalle[$fecha.' '.$row['hora'].'_4_'.$row['cve']]['abono'] = abs($row['monto']);
@@ -494,7 +494,7 @@ if($_POST['ajax']==2){
 			$x++;
 		}
 		
-		$res=mysql_db_query($base,"SELECT a.* FROM devolucion_certificado a INNER JOIN cobro_engomado b on b.plaza = a.plaza AND b.cve = a.ticket WHERE a.estatus!='C' AND a.fecha='$fecha' AND b.depositante='".$_POST['depositante']."' AND b.estatus!='C' AND b.tipo_pago IN (2,6)");
+		$res=mysql_query("SELECT a.* FROM devolucion_certificado a INNER JOIN cobro_engomado b on b.plaza = a.plaza AND b.cve = a.ticket WHERE a.estatus!='C' AND a.fecha='$fecha' AND b.depositante='".$_POST['depositante']."' AND b.estatus!='C' AND b.tipo_pago IN (2,6)");
 		while($row=mysql_fetch_array($res)){
 			if($row['tipo_pago']==6){
 

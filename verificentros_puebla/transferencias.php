@@ -21,18 +21,18 @@ while($row = mysql_fetch_array($res)){
 }
 
 if($_POST['cmd']==101){
-	$res=mysql_db_query($base,"SELECT * FROM plazas");
+	$res=mysql_query("SELECT * FROM plazas");
 	while($Plaza=mysql_fetch_array($res)){
 		$array_plaza[$row['cve']]=$row['nombre'];
 	}
 
-	$rsPuesto=mysql_db_query($base,"SELECT * FROM puestos");
+	$rsPuesto=mysql_query("SELECT * FROM puestos");
 	while($Puesto=mysql_fetch_array($rsPuesto)){
 		$array_puesto[$Puesto['cve']]=$Puesto['nombre'];
 	}
 	include('../fpdf153/fpdf.php');
 	include("numlet.php");
-	$res=mysql_db_query($base,"SELECT * FROM transferencias WHERE cve='".$_POST['reg']."'");
+	$res=mysql_query("SELECT * FROM transferencias WHERE cve='".$_POST['reg']."'");
 	$row=mysql_fetch_array($res);
 	$pdf=new FPDF('P','mm','LETTER');
 	$pdf->AddPage();
@@ -69,7 +69,7 @@ if($_POST['cmd']==101){
 	$pdf->Ln();
 	$pdf->Ln();
 	$pdf->Ln();
-	$rsfirmas=mysql_db_query($base,"SELECT * FROM administradores WHERE transferencias='1' AND plaza='".$row['plaza']."' AND fecha_ini<='".$row['fecha']."' AND (fecha_fin>='".$row['fecha']."' OR fecha_fin='0000-00-00')");
+	$rsfirmas=mysql_query("SELECT * FROM administradores WHERE transferencias='1' AND plaza='".$row['plaza']."' AND fecha_ini<='".$row['fecha']."' AND (fecha_fin>='".$row['fecha']."' OR fecha_fin='0000-00-00')");
 	$numfirmas=mysql_num_rows($rsfirmas);
 	$ancho=190/$numfirmas;
 	$array_puestoadmon=array();
@@ -205,11 +205,11 @@ if ($_POST['cmd']==2) {
 						cuenta='".$_POST['cuenta']."',motivo='".$_POST['motivo']."',referencia='".$_POST['referencia']."',
 						beneficiario='".$_POST['beneficiario']."',monto='".$_POST['monto']."',concepto='".$_POST['concepto']."'
 					WHERE cve='".$_POST['reg']."'";
-			mysql_db_query($base,$insert);
+			mysql_query($insert);
 		$deposito = $_POST['reg'];
 	}	
 	else{
-		$rsAbono=mysql_db_query($base,"SELECT IFNULL(MAX(folio)+1,1) FROM transferencias WHERE plaza='".$_POST['plaza']."'");
+		$rsAbono=mysql_query("SELECT IFNULL(MAX(folio)+1,1) FROM transferencias WHERE plaza='".$_POST['plaza']."'");
 		$Abono=mysql_fetch_array($rsAbono);
 		$folio=$Abono[0];
 		$insert = " INSERT transferencias 

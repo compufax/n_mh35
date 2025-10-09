@@ -2,7 +2,7 @@
 include ("main.php"); 
 /*** ARREGLOS ***********************************************************/
 
-$rsUsuario=mysql_db_query($base,"SELECT * FROM usuarios");
+$rsUsuario=mysql_query("SELECT * FROM usuarios");
 while($Usuario=mysql_fetch_array($rsUsuario)){
 	$array_usuario[$Usuario['cve']]=$Usuario['usuario'];
 }
@@ -52,7 +52,7 @@ if($_POST['cmd']==100){
 		$pdf->Ln();
 		while($fecha<=$_POST['fecha_fin']){
 			
-			$res=mysql_db_query($base,"SELECT * FROM cobro_engomado WHERE depositante='".$_POST['depositantes'][$i]."' AND estatus!='C' AND tipo_pago IN (2,6) AND fecha='$fecha'");
+			$res=mysql_query("SELECT * FROM cobro_engomado WHERE depositante='".$_POST['depositantes'][$i]."' AND estatus!='C' AND tipo_pago IN (2,6) AND fecha='$fecha'");
 			while($row=mysql_fetch_array($res)){
 				if($row['tipo_pago']==6){
 					$abono+=$row['monto'];
@@ -95,7 +95,7 @@ if($_POST['cmd']==100){
 if($_POST['cmd']==101){
 	echo '<html><body>';
 	
-	$res=mysql_db_query($base,"SELECT * FROM depositantes WHERE plaza = '".$_POST['plazausuario']."' AND cve=".$_POST['reg']);
+	$res=mysql_query("SELECT * FROM depositantes WHERE plaza = '".$_POST['plazausuario']."' AND cve=".$_POST['reg']);
 	$row=mysql_fetch_array($res);
 	$cveori=$row['cve_ori'];
 	echo '<table align="center">';
@@ -119,7 +119,7 @@ if($_POST['cmd']==101){
 	echo '<td align="left">&nbsp;</td>';
 	echo '</tr>';
 	while($fecha<=$_POST['fecha_fin']){
-		$res=mysql_db_query($base,"SELECT * FROM cobro_engomado WHERE depositante='".$_POST['reg']."' AND estatus!='C' AND tipo_pago IN (2,6) AND fecha='$fecha'");
+		$res=mysql_query("SELECT * FROM cobro_engomado WHERE depositante='".$_POST['reg']."' AND estatus!='C' AND tipo_pago IN (2,6) AND fecha='$fecha'");
 		while($row=mysql_fetch_array($res)){
 			if($row['tipo_pago']==6){
 				$abono+=abs($row['monto']);

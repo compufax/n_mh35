@@ -423,7 +423,7 @@ $pdf->Ln();
 $pdf->Ln();
 $pdf->Ln();
 $pdf->Ln();
-$rsfirmas=mysql_db_query($base,"SELECT * FROM administradores WHERE nomina='1' AND plaza='".$_POST['plaza']."' AND fecha_ini<='".$row['fecha']."' AND (fecha_fin>='".$row['fecha']."' OR fecha_fin='0000-00-00')");
+$rsfirmas=mysql_query("SELECT * FROM administradores WHERE nomina='1' AND plaza='".$_POST['plaza']."' AND fecha_ini<='".$row['fecha']."' AND (fecha_fin>='".$row['fecha']."' OR fecha_fin='0000-00-00')");
 $array_administrativos=array();
 $array_administrativospuestos=array();
 while($Firmas=mysql_fetch_array($rsfirmas)){
