@@ -847,14 +847,17 @@ if($_POST['ajax']==9){
 	else{
 		$filtroengomado="";
 	}
-	$res = mysql_query("SELECT cve FROM certificados_cancelados WHERE plaza='".$_POST['plazausuario']."' AND CAST(certificado AS UNSIGNED)='".intval($_POST['certificado'])."' AND estatus!='C'{$filtroengomado}");
+	$res = mysql_query("SELECT cve FROM certificados_cancelados WHERE plaza='".$_POST['plazausuario']."' AND certificado='".intval($_POST['certificado'])."' AND estatus!='C'{$filtroengomado}");
 	if(mysql_num_rows($res)==0){
-		$res = mysql_query("SELECT cve FROM certificados WHERE plaza='".$_POST['plazausuario']."' AND CAST(certificado AS UNSIGNED)='".intval($_POST['certificado'])."' AND estatus!='C'{$filtroengomado}");
+		$res = mysql_query("SELECT cve FROM certificados WHERE plaza='".$_POST['plazausuario']."' AND certificado='".intval($_POST['certificado'])."' AND estatus!='C'{$filtroengomado}");
 		if(mysql_num_rows($res)>0){
 			$resultado['error'] = 1;
 			$resultado['mensaje_error'] = 'El holograma ya se entrego';
 		}
 		else{
+			echo "SELECT a.engomado, b.estatus, b.tipo, a.anio FROM compra_certificados a 
+			INNER JOIN compra_certificados_detalle b ON a.plaza = b.plaza AND a.cve = b.cvecompra 
+			WHERE a.plaza='".$_POST['plazausuario']."' {$filtroengomado} AND a.estatus!='C' AND b.folio='".intval($_POST['certificado'])."' ORDER BY b.cve DESC LIMIT 1";
 			$res = mysql_query("SELECT a.engomado, b.estatus, b.tipo, a.anio FROM compra_certificados a 
 			INNER JOIN compra_certificados_detalle b ON a.plaza = b.plaza AND a.cve = b.cvecompra 
 			WHERE a.plaza='".$_POST['plazausuario']."' {$filtroengomado} AND a.estatus!='C' AND b.folio='".intval($_POST['certificado'])."' ORDER BY b.cve DESC LIMIT 1");

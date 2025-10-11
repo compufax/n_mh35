@@ -546,10 +546,10 @@ if($_POST['ajax']==1) {
 				if($_POST['cveusuario']==1){
 					echo '<td align="center"';
 					$cancelaciones=0;
-					if($row['estatus']!='C' && $_POST['cveusuario'] == 1){
+					/*if($row['estatus']!='C' && $_POST['cveusuario'] == 1){
 						$resCan = mysql_query("SELECT cve FROM certificados_cancelados WHERE plaza='".$row['plaza']."' AND placa='".$row['placa']."' AND estatus!='C' AND DATE(fecha, '".$row['fecha']."') BETWEEN -8 AND 8");
 						$cancelaciones = mysql_num_rows($resCan);
-					}
+					}*/
 					if($cancelaciones > 0) echo ' style="color:red;"';
 					elseif($_POST['folio']==$row['cve']) echo ' style="color:blue;"';
 					echo '>';

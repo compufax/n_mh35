@@ -123,7 +123,7 @@ if ($_POST['cmd']==2) {
 
 		$totaldesglose = 0;
 		foreach($_POST['denominacion'] as $k=>$v){
-			$totaldesglose+=$_POST['importe'][$k];
+			$totaldesglose+=floatval($_POST['importe'][$k]);
 		}
 
 		if($saldocaja < $totaldesglose){

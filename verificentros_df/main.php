@@ -1641,7 +1641,7 @@ echo '';
 			$row = mysql_fetch_array($res);
 			$abono = $row[0];
 		}
-		$res = mysql_query("SELECT COUNT(cve) FROM cobro_engomado a WHERE estatus!='C' AND depositante='$depositante' AND tipo_pago = 6 AND tipo_vale > 0 AND vales_pago_anticipado > 0 $filtro");
+		$res = mysql_query("SELECT COUNT(cve) FROM cobro_engomado a WHERE estatus!='C' AND depositante='$depositante' AND tipo_pago = 6 AND tipo_vale > 0 AND vale_pago_anticipado > 0 $filtro");
 		$row = mysql_fetch_array($res);
 		$cargo += $row[0];
 
