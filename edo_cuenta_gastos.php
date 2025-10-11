@@ -13,7 +13,7 @@ while($Usuario=mysql_fetch_array($rsUsuario)){
 
 
 if($_POST['cmd']==100){
-    include('fpdf153/fpdf.php');
+    include('../fpdf153/fpdf.php');
 	include("numlet.php");
 	$pdf=new FPDF('P','mm','LETTER');
 	$pdf->AddPage();
