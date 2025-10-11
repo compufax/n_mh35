@@ -125,7 +125,7 @@ if($_POST['cmd']==3){
 
 if ($_POST['cmd']==2) {
 
-	if($_POST['reg']) {
+	if($_POST['reg'] > 0) {
 			//Actualizar el Registro
 			$update = " UPDATE depositantes 
 						SET nombre='".$_POST['nombre']."',edo_cuenta='1',tipo='".$_POST['tipo']."',agencia='".$_POST['agencia']."',
@@ -160,7 +160,7 @@ if ($_POST['cmd']==2) {
 		echo '
 			<tr>';
 			if(nivelUsuario()>1)
-				echo '<td><a href="#" onClick="$(\'#panel\').show();if(document.forma.plaza.value==\'0\'){$(\'#panel\').show(); alert(\'Necesita seleccionar la plaza\');}else{ atcr(\'depositantes_contado.php\',\'\',\'2\',\''.$row['cve'].'\');}"><img src="images/guardar.gif" border="0">&nbsp;Guardar</a></td><td>&nbsp;</td>';
+				echo '<td><a href="#" onClick="$(\'#panel\').show();if(document.forma.plaza.value==\'0\'){$(\'#panel\').show(); alert(\'Necesita seleccionar la plaza\');}else{ atcr(\'depositantes_contado.php\',\'\',\'2\',\''.$_POST['reg'].'\');}"><img src="images/guardar.gif" border="0">&nbsp;Guardar</a></td><td>&nbsp;</td>';
 			echo '<td><a href="#" onClick="$(\'#panel\').show();atcr(\'depositantes_contado.php\',\'\',\'0\',\'0\');"><img src="images/flecha-izquierda.gif" border="0">&nbsp;Volver</a></td><td>&nbsp;</td>
 			</tr>';
 		echo '</table>';
