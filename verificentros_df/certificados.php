@@ -855,15 +855,12 @@ if($_POST['ajax']==9){
 			$resultado['mensaje_error'] = 'El holograma ya se entrego';
 		}
 		else{
-			echo "SELECT a.engomado, b.estatus, b.tipo, a.anio FROM compra_certificados a 
-			INNER JOIN compra_certificados_detalle b ON a.plaza = b.plaza AND a.cve = b.cvecompra 
-			WHERE a.plaza='".$_POST['plazausuario']."' {$filtroengomado} AND a.estatus!='C' AND b.folio='".intval($_POST['certificado'])."' ORDER BY b.cve DESC LIMIT 1";
 			$res = mysql_query("SELECT a.engomado, b.estatus, b.tipo, a.anio FROM compra_certificados a 
 			INNER JOIN compra_certificados_detalle b ON a.plaza = b.plaza AND a.cve = b.cvecompra 
-			WHERE a.plaza='".$_POST['plazausuario']."' {$filtroengomado} AND a.estatus!='C' AND b.folio='".intval($_POST['certificado'])."' ORDER BY b.cve DESC LIMIT 1");
+			WHERE a.plaza='".$_POST['plazausuario']."' {$filtroengomado} AND a.estatus!='C' AND b.folio='".intval($_POST['certificado'])."' ORDER BY b.cve DESC LIMIT 1");
 			$resultado['query'] = utf8_encode("SELECT a.engomado, b.estatus, b.tipo, a.anio FROM compra_certificados a 
 			INNER JOIN compra_certificados_detalle b ON a.plaza = b.plaza AND a.cve = b.cvecompra 
-			WHERE a.plaza='".$_POST['plazausuario']."' {$filtroengomado} AND a.estatus!='C' AND b.folio='".intval($_POST['certificado'])."' ORDER BY b.cve DESC LIMIT 1");
+			WHERE a.plaza='".$_POST['plazausuario']."' {$filtroengomado} AND a.estatus!='C' AND b.folio='".intval($_POST['certificado'])."' ORDER BY b.cve DESC LIMIT 1");
 			if($row = mysql_fetch_array($res)){
 				//if($row['engomado'] == 3 || $row['engomado'] == 19 || $row['anio'] == $_POST['anio']){
 					$resultado['engomado'] = '+*<option value="'.$row['engomado'].'">'.$array_engomado[$row['engomado']].'</option>';
