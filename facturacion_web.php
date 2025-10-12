@@ -1336,14 +1336,11 @@ if($_POST['cmd'] == 0){
 ?>
 <link href="assets/lightbox2/dist/css/lightbox.min.css" rel="stylesheet">
 <script src="assets/lightbox2/dist/js/lightbox.min.js"></script>
-<div id="modalmensaje40" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<!--<div id="modalmensaje40" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
 	<div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="staticBackdropLabel"><h1>Importante</h1></h5>
-		        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-		          <span aria-hidden="true">&times;</span>
-		        </button>-->
 			</div>
 			<div class="modal-body">
 				<h1><font color="RED">Estimado usuario, es importante que conozcas los nuevos cambios que contempla la version 4.0.<br>El cambio mas relevante ahora es que la razón social es la que viene especificada en tu cédula sin tipos de sociedad, tu régimen en el cual tributas y tu código postal registrado ante el SAT</font></h1>
@@ -1353,7 +1350,7 @@ if($_POST['cmd'] == 0){
 		     </div>
 		</div>
 	</div>
-</div>
+</div>-->
 <div class="container">
 <section class="col-sm-9">
 <br><br><br>
@@ -1649,13 +1646,13 @@ function myFunction() {
 	$("#folio").on("keydown", function(e){
 		return e.which !== 32;
 	});
-	$("#modalmensaje40").modal({
+	/*$("#modalmensaje40").modal({
 		backdrop: false,
 		keyboard: false,
 		show: true
 	});
 
-	$('#modalmensaje40').modal('show');
+	$('#modalmensaje40').modal('show');*/
 </script>
 <?php
 }

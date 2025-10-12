@@ -507,13 +507,13 @@ error_reporting(0);
 				}
 				echo '</td><td align="center">';
 				foreach($array_tickets as $ticket=>$datosticket){
-					$res3=mysql_query("SELECT a.cve FROM facturas a INNER JOIN cobro_engomado b ON a.plaza=b.plaza AND a.cve=b.factura WHERE a.plaza='".$Abono['plaza']."' AND a.cve!='".$Abono['cve']."' AND b.placa = '".$datosticket['placa']."' AND ABS(DATEDIFF('".$Abono['fecha']."',fecha))<=60");
+					/*$res3=mysql_query("SELECT a.cve FROM facturas a INNER JOIN cobro_engomado b ON a.plaza=b.plaza AND a.cve=b.factura WHERE a.plaza='".$Abono['plaza']."' AND a.cve!='".$Abono['cve']."' AND b.placa = '".$datosticket['placa']."' AND ABS(DATEDIFF('".$Abono['fecha']."',fecha))<=60");
 					if(mysql_num_rows($res3)>0){
 						echo '<font color="RED">'.$datosticket['placa'].'</font><br>';
 					}
-					else{
+					else{*/
 						echo ''.$datosticket['placa'].'<br>';
-					}
+					//}
 				}
 				echo '</td>';
 			}
