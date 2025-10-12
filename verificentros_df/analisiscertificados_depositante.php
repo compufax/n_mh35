@@ -224,7 +224,7 @@ $tot=$row[4]+$row[5]+$row[6];
 	$legends[]='Movimientos';
 	$legends[]='Rechazos';
 	$legends[]='Rechazos OBDII';
-	if(count($data)>0){
+	if(count($data)>0 && 1==2){
 		$data2=array();
 		$data2[0] = array('Entrega');
 		foreach($data as $datos){

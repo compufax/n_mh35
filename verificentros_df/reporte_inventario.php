@@ -30,10 +30,10 @@ while($row=mysql_fetch_array($res)){
 }
 
 $array_entidades = array();
-$res = mysql_query("SELECT cve,nombre FROM cat_entidades  ORDER BY nombre");
+/*$res = mysql_query("SELECT cve,nombre FROM cat_entidades  ORDER BY nombre");
 while($row=mysql_fetch_array($res)){
 	$array_entidades[$row['cve']]=$row['nombre'];
-}
+}*/
 
 if($_POST['cveusuario']==1)
 	$res = mysql_query("SELECT cve,nombre FROM anios_certificados WHERE 1 ORDER BY nombre DESC");
