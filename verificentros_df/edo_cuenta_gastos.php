@@ -16,7 +16,7 @@ while($row=mysql_fetch_array($res)){
 
 
 if($_POST['cmd']==102){
-    include('fpdf153/fpdf.php');
+    include('../fpdf153/fpdf.php');
 	include("numlet.php");
 	$pdf=new FPDF('P','mm','LETTER');
 	$pdf->AddPage();
