@@ -1,5 +1,30 @@
 <?php
 include("main.php");
+if($_POST['cmd']==1000){
+	$res = mysql_query("SELECT a.folio, a.serie, b.nombre FROM facturas a INNER JOIN plazas b ON b.cve = a.plaza INNER JOIN clientes c ON c.cve = a.cliente WHERE a.plaza={$_POST['plazausuario']} AND a.cve={$_POST['reg']}");
+	$row = mysql_fetch_assoc(($res));
+	// Ruta del archivo XML en el servidor
+	$archivo = "../cfdi/comprobantes/cfdi_{$_POST['plazausuario']}_{$_POST['reg']}.xml";
+	$nombre_archivo = "FACT {$row['nombre']} {$row['serie']} {$row['folio']}.xml";
+
+	// Verificar que exista
+	if (!file_exists($archivo)) {
+	    die("El archivo {$archivo} no existe.");
+	}
+
+	// Cabeceras para forzar descarga
+	header('Content-Description: File Transfer');
+	header('Content-Type: application/xml');
+	header('Content-Disposition: attachment; filename="' . $nombre_archivo . '"');
+	header('Expires: 0');
+	header('Cache-Control: must-revalidate');
+	header('Pragma: public');
+	header('Content-Length: ' . filesize($archivo));
+
+	// Enviar contenido
+	readfile($archivo);
+	exit();
+}
 include("imp_factura.php");
 //ARREGLOS
 $array_tipo_pag=array('Contado', 'Credito');
@@ -373,7 +398,7 @@ error_reporting(0);
 					echo '&nbsp;&nbsp;<span style="cursor:pointer;" href="#" onClick="if(confirm(\'Esta seguro de cancelar?\')){$(\'#panel\').show();cancelarfactura(\''.$Abono['cve'].'\',0);}"><img src="images/validono.gif" border="0" title="Cancelar '.$Abono['folio'].'"></span>';
 				}
 				if(file_exists('../cfdi/comprobantes/cfdi_'.$_POST['plazausuario'].'_'.$Abono['cve'].'.xml')){
-					echo '&nbsp;&nbsp;<a href="#" onClick="atcr(\'../cfdi/comprobantes/cfdi_'.$_POST['plazausuario'].'_'.$Abono['cve'].'.xml\',\'_blank\',\'0\',\''.$Abono['cve'].'\');"><img src="images/b_print.png" border="0" title="Imprimir XML '.$Abono['folio'].'"></a>';
+					echo '&nbsp;&nbsp;<a href="#" onClick="atcr(\'facturas.php\',\'_blank\',\'1000\',\''.$Abono['cve'].'\');"><img src="images/b_print.png" border="0" title="Imprimir XML '.$Abono['folio'].'"></a>';
 				}
 				echo '</td>';
 				if($nivelUsuario>0){
@@ -401,7 +426,7 @@ error_reporting(0);
 					/*echo '&nbsp;&nbsp;<a href="#" onClick="if(confirm(\'Esta seguro de generar la nota de credito de la factura?\')){mostrar_obs_nota(\''.$Abono['cve'].'\');}"><img src="images/cerrar.gif" border="0" title="Nota Credito '.$Abono['folio'].'"></a>';*/
 				}
 				//if($_POST['cveusuario']==1)
-					echo '&nbsp;&nbsp;<a href="#" onClick="atcr(\'../cfdi/comprobantes/cfdi_'.$_POST['plazausuario'].'_'.$Abono['cve'].'.xml\',\'_blank\',\'0\',\''.$Abono['cve'].'\');"><img src="images/b_print.png" border="0" title="Imprimir XML '.$Abono['folio'].'"></a>';
+					echo '&nbsp;&nbsp;<a href="#" onClick="atcr(\'facturas.php\',\'_blank\',\'1000\',\''.$Abono['cve'].'\');"><img src="images/b_print.png" border="0" title="Imprimir XML '.$Abono['folio'].'"></a>';
 				echo '</td>';
 				if($nivelUsuario>0){
 					echo '<td><input type="checkbox" class="checks" name="checksf[]" value="'.$Abono['cve'].'"></td>';

@@ -225,7 +225,7 @@ if ($_POST['cmd']==2) {
 		
 		echo '<table>';
 		echo '<tr><th align="left">Placa</th><input type="hidden" name="placa_" id="placa_" value=""><td><input type="text" name="placa" id="placa" class="textField" size="10" value="'.$row['placa'].'" onKeyUp="if(event.keyCode==13){ traeNota(this.value);}">**Enter</td></tr>';
-		echo '<tr><th align="left">Nota</th><td><input type="text" name="nota" id="nota" class="textField" size="10" value="'.$row['nota'].'" class="readOnly" readOnly></td></tr>';
+		echo '<tr><th align="left">Ticket</th><td><input type="text" name="nota" id="nota" class="textField" size="10" value="'.$row['nota'].'" class="readOnly" readOnly></td></tr>';
 		echo '<tr><th align="left">Fecha</th><td><input type="text" name="fecha" id="fecha" class="textField" size="15" value="'.$row['fecha'].'" class="readOnly" readOnly></td></tr>';
 		echo '<tr><th align="left">Catindad</th><td><input type="text" name="cantidad" id="cantidad" class="textField" size="5" value="'.$row['cantidad'].'" onKeyUp="if(event.keyCode==13){ traeTotal(this.value);}"></td></tr>';
 //		echo '<tr><th align="left">Total</th><td><input type="text" name="total" id="total" class="textField" size="5" value="'.$row['total'].'" class="readOnly" readonly></td></tr>';
@@ -253,7 +253,7 @@ if ($_POST['cmd']==2) {
 			{
 				if (objeto.readyState==4){
 				datos = objeto.responseText.split("|*|");
-				document.getElementById("nota").value = datos[0];
+				document.getElementById("nota").value = datos[2];
 				document.getElementById("fecha").value = datos[1];
 				document.getElementById("placa_").value = datos[2];
 				
