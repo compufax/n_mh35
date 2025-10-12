@@ -591,7 +591,7 @@ $select= " SELECT sum(if(a.tipo_venta IN (0,3) AND a.tipo_pago=1 AND a.estatus!=
 			
 	
 
-				$select7=" SELECT sum(a.num_ticket) as recuperados ,a.*, IF(ISNULL(MAX(b.cve)), '', CONCAT(MIN(b.cve),' - ',MAX(b.cve))) as vales ,sum(a.monto) as recuperados_monto
+				$select7=" SELECT sum(a.verificaciones) as recuperados ,a.*, IF(ISNULL(MAX(b.cve)), '', CONCAT(MIN(b.cve),' - ',MAX(b.cve))) as vales ,sum(a.monto) as recuperados_monto
 						   FROM pagos_caja a
 						   LEFT JOIN vales_pago_anticipado b ON a.cve = b.pago AND a.plaza = b.plaza
 						   WHERE a.plaza='".$_POST['plazausuario']."' AND a.fecha BETWEEN '".$_POST['fecha_ini']."' AND '".$_POST['fecha_fin']."' and a.estatus!='C' AND a.tipo_pago='2'";
@@ -1037,7 +1037,7 @@ $select= " SELECT sum(if(a.tipo_venta IN (0,3) AND a.tipo_pago=1 AND a.estatus!=
 			
 	
 
-				$select7=" SELECT sum(a.num_ticket) as recuperados ,a.*, IF(ISNULL(MAX(b.cve)), '', CONCAT(MIN(b.cve),' - ',MAX(b.cve))) as vales ,sum(a.monto) as recuperados_monto
+				$select7=" SELECT sum(a.verificaciones) as recuperados ,a.*, IF(ISNULL(MAX(b.cve)), '', CONCAT(MIN(b.cve),' - ',MAX(b.cve))) as vales ,sum(a.monto) as recuperados_monto
 						   FROM pagos_caja a
 						   LEFT JOIN vales_pago_anticipado b ON a.cve = b.pago AND a.plaza = b.plaza
 						   WHERE a.plaza='".$_POST['plazausuario']."' AND a.fecha BETWEEN '".$_POST['fecha_ini']."' AND '".$_POST['fecha_fin']."' and a.estatus!='C' AND a.tipo_pago='2'";
@@ -1736,7 +1736,7 @@ $select= " SELECT sum(if(a.tipo_venta IN (0,3) AND a.tipo_pago=1 AND a.estatus!=
 						  $total1+=$cant+$row['reposiciones_monto'];				
 				echo '<tr><td colspan="3"></td></tr>';
 				
-				$select7=" SELECT sum(a.num_ticket) as recuperados ,a.*, IF(ISNULL(MAX(b.cve)), '', CONCAT(MIN(b.cve),' - ',MAX(b.cve))) as vales ,sum(a.monto) as recuperados_monto
+				$select7=" SELECT sum(a.verificaciones) as recuperados ,a.*, IF(ISNULL(MAX(b.cve)), '', CONCAT(MIN(b.cve),' - ',MAX(b.cve))) as vales ,sum(a.monto) as recuperados_monto
 						   FROM pagos_caja a
 						   LEFT JOIN vales_pago_anticipado b ON a.cve = b.pago AND a.plaza = b.plaza
 						   WHERE a.plaza='".$_POST['plazausuario']."' AND a.fecha BETWEEN '".$_POST['fecha_ini']."' AND '".$_POST['fecha_fin']."' and a.estatus!='C' AND a.tipo_pago='2'";
