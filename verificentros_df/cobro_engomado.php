@@ -2955,25 +2955,27 @@ if ($_POST['cmd']==2) {
 					//$fecha_ini = '2021-01-01';
 					$resD = mysql_query("SELECT pagos_cortesia FROM depositantes WHERE cve='{$_POST['depositante']}'");
 					$rowD = mysql_fetch_array($resD);
-					$pagos_para_cortesia = $rowD['pagos_cortesia'];
-					$fecha_ini = date( "Y-m-d" , strtotime ( "-30 day" , strtotime(date("Y-m-d")) ) );
-					$res1 = mysql_query("SELECT MAX(ticket) FROM vale_cortesia_acumulado WHERE plaza='{$_POST['plazausuario']}' AND estatus!='C' AND depositante='".$_POST['depositante']."'");
-					$row1 = mysql_fetch_array($res1);
-					$res = mysql_query("SELECT COUNT(cve) as pagos, GROUP_CONCAT(cve) as tickets FROM cobro_engomado WHERE plaza='".$_POST['plazausuario']."' AND engomado=1 AND estatus!='C' AND depositante='".$_POST['depositante']."' AND tipo_venta=0 AND tipo_pago IN (1,5,7) AND fecha>='2023-01-09' AND cve>'{$row1[0]}'");
-					$row = mysql_fetch_array($res);
-					$cortesias_ganadas = intval($row['pagos']/$pagos_para_cortesia);
-					$cortesias_disponibles = $cortesias_ganadas - $row['cortesias'];
-					if($cortesias_disponibles>0){
-						$resF = mysql_query("SELECT IFNULL(MAX(folio)+1,1) as siguiente FROM vale_cortesia_acumulado WHERE plaza='{$_POST['plazausuario']}'");
-						$rowF=mysql_fetch_array($resF);
-						$folioV = $rowF['siguiente'];
-						for($c=0;$c<$cortesias_disponibles;$c++){
-							$insert = "INSERT vale_cortesia_acumulado SET plaza='{$_POST['plazausuario']}', folio='{$folioV}', fecha=CURDATE(),hora=CURTIME(), depositante='{$_POST['depositante']}', ticket='{$cvecobro}', estatus='A', usuario='{$_POST['cveusuario']}', tickets='{$row['tickets']}'";
-							while(!$rinsert=mysql_query($insert)){
-								$folioV++;
+					if ($rowD['pagos_cortesia'] > 0){
+						$pagos_para_cortesia = $rowD['pagos_cortesia'];
+						$fecha_ini = date( "Y-m-d" , strtotime ( "-30 day" , strtotime(date("Y-m-d")) ) );
+						$res1 = mysql_query("SELECT MAX(ticket) FROM vale_cortesia_acumulado WHERE plaza='{$_POST['plazausuario']}' AND estatus!='C' AND depositante='".$_POST['depositante']."'");
+						$row1 = mysql_fetch_array($res1);
+						$res = mysql_query("SELECT COUNT(cve) as pagos, GROUP_CONCAT(cve) as tickets FROM cobro_engomado WHERE plaza='".$_POST['plazausuario']."' AND engomado=1 AND estatus!='C' AND depositante='".$_POST['depositante']."' AND tipo_venta=0 AND tipo_pago IN (1,5,7) AND fecha>='2023-01-09' AND cve>'{$row1[0]}'");
+						$row = mysql_fetch_array($res);
+						$cortesias_ganadas = intval($row['pagos']/$pagos_para_cortesia);
+						$cortesias_disponibles = $cortesias_ganadas - $row['cortesias'];
+						if($cortesias_disponibles>0){
+							$resF = mysql_query("SELECT IFNULL(MAX(folio)+1,1) as siguiente FROM vale_cortesia_acumulado WHERE plaza='{$_POST['plazausuario']}'");
+							$rowF=mysql_fetch_array($resF);
+							$folioV = $rowF['siguiente'];
+							for($c=0;$c<$cortesias_disponibles;$c++){
 								$insert = "INSERT vale_cortesia_acumulado SET plaza='{$_POST['plazausuario']}', folio='{$folioV}', fecha=CURDATE(),hora=CURTIME(), depositante='{$_POST['depositante']}', ticket='{$cvecobro}', estatus='A', usuario='{$_POST['cveusuario']}', tickets='{$row['tickets']}'";
+								while(!$rinsert=mysql_query($insert)){
+									$folioV++;
+									$insert = "INSERT vale_cortesia_acumulado SET plaza='{$_POST['plazausuario']}', folio='{$folioV}', fecha=CURDATE(),hora=CURTIME(), depositante='{$_POST['depositante']}', ticket='{$cvecobro}', estatus='A', usuario='{$_POST['cveusuario']}', tickets='{$row['tickets']}'";
+								}
+								$folioV++;
 							}
-							$folioV++;
 						}
 					}
 				}
