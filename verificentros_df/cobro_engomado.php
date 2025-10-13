@@ -1054,7 +1054,7 @@ if($_POST['ajax']==71){
 }
 
 if ($_POST['ajax']==72){
-	$res = mysql_query("SELECT cve FROM cobro_engomado WHERE plaza='{$_POST['plazausuario']}' AND tipo_venta=0 AND tipo_pago=10 AND vales_pago_anticipado='{$_POST['vales_pago_anticipado']}' AND estatus!='C'");
+	$res = mysql_query("SELECT cve FROM cobro_engomado WHERE plaza='{$_POST['plazausuario']}' AND tipo_venta=0 AND tipo_pago=10 AND vale_pago_anticipado='{$_POST['vale_pago_anticipado']}' AND estatus!='C'");
 	if($row = mysql_fetch_array($res)){
 		echo '2';
 	}
@@ -1112,7 +1112,7 @@ if ($_POST['ajax']==73){
 }
 
 if ($_POST['ajax']==74){
-	$res = mysql_query("SELECT cve FROM cobro_engomado WHERE plaza='{$_POST['plazausuario']}' AND tipo_venta=0 AND tipo_pago=11 AND vales_pago_anticipado='{$_POST['vales_pago_anticipado']}' AND estatus!='C'");
+	$res = mysql_query("SELECT cve FROM cobro_engomado WHERE plaza='{$_POST['plazausuario']}' AND tipo_venta=0 AND tipo_pago=11 AND vale_pago_anticipado='{$_POST['vale_pago_anticipado']}' AND estatus!='C'");
 	if($row = mysql_fetch_array($res)){
 		echo '2';
 	}
