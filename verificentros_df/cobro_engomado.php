@@ -453,6 +453,7 @@ if($_POST['ajax']==1) {
 		}
 		else{
 			$select.=" AND a.fecha BETWEEN '".$_POST['fecha_ini']."' AND '".$_POST['fecha_fin']."'";
+			if ($_POST['vale']!="") { $select.=" AND a.vale_pago_anticipado=".$_POST['vale'].""; }
 			if ($_POST['usuario']!="") { $select.=" AND a.usuario='".$_POST['usuario']."' "; }
 			if ($_POST['engomado']!="") { $select.=" AND a.engomado='".$_POST['engomado']."' "; }
 			if ($_POST['estatus']!="") { $select.=" AND a.estatus='".$_POST['estatus']."' "; }
@@ -4345,6 +4346,7 @@ if ($_POST['cmd']<1) {
 			echo '>'.$v.'</option>';
 	}
 	echo '</select></td></tr>';
+	echo '<tr><td>Vale</td><td><input type="text" name="vale" id="vale" size="10" class="textField" value=""></td></tr>';
 	echo '</table>';
 	echo '</td><td align="left" width="50%" valign="top" id="capacorte"></td></tr></table>';
 	echo '<br>';
@@ -4381,7 +4383,7 @@ echo '
 		} else {
 			objeto.open("POST","cobro_engomado.php",true);
 			objeto.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-			objeto.send("ajax=1&btn="+btn+"&tipo_cortesia="+document.getElementById("tipo_cortesia").value+"&depositante="+document.getElementById("depositante").value+"&tipo_cliente="+document.getElementById("tipo_cliente").value+"&folio="+document.getElementById("folio").value+"&tipo_venta="+document.getElementById("tipo_venta").value+"&anio="+document.getElementById("anio").value+"&multa="+document.getElementById("multa").value+"&tipo_pago="+document.getElementById("tipo_pago").value+"&tipo_combustible="+document.getElementById("tipo_combustible").value+"&estatus="+document.getElementById("estatus").value+"&mostrar="+document.getElementById("mostrar").value+"&fecha_ini="+document.getElementById("fecha_ini").value+"&fecha_fin="+document.getElementById("fecha_fin").value+"&placa="+document.getElementById("placa").value+"&engomado="+document.getElementById("engomado").value+"&usuario="+document.getElementById("usuario").value+"&cveusuario="+document.getElementById("cveusuario").value+"&cvemenu="+document.getElementById("cvemenu").value+"&plazausuario="+document.getElementById("plazausuario").value+"&numeroPagina="+document.getElementById("numeroPagina").value+"&descuento50="+document.getElementById("descuento50").value);
+			objeto.send("ajax=1&btn="+btn+"&tipo_cortesia="+document.getElementById("tipo_cortesia").value+"&depositante="+document.getElementById("depositante").value+"&tipo_cliente="+document.getElementById("tipo_cliente").value+"&folio="+document.getElementById("folio").value+"&tipo_venta="+document.getElementById("tipo_venta").value+"&anio="+document.getElementById("anio").value+"&multa="+document.getElementById("multa").value+"&tipo_pago="+document.getElementById("tipo_pago").value+"&tipo_combustible="+document.getElementById("tipo_combustible").value+"&estatus="+document.getElementById("estatus").value+"&mostrar="+document.getElementById("mostrar").value+"&fecha_ini="+document.getElementById("fecha_ini").value+"&fecha_fin="+document.getElementById("fecha_fin").value+"&placa="+document.getElementById("placa").value+"&vale="+document.getElementById("vale").value+"&engomado="+document.getElementById("engomado").value+"&usuario="+document.getElementById("usuario").value+"&cveusuario="+document.getElementById("cveusuario").value+"&cvemenu="+document.getElementById("cvemenu").value+"&plazausuario="+document.getElementById("plazausuario").value+"&numeroPagina="+document.getElementById("numeroPagina").value+"&descuento50="+document.getElementById("descuento50").value);
 			objeto.onreadystatechange = function()
 			{
 				if (objeto.readyState==4)

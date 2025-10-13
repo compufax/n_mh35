@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ERROR | E_PARSE);
+ini_set('default_charset', 'ISO-8859-1');
 require_once('funcionesmysql.php');
 //Conexion con la base
 if (!$MySQL=@mysql_connect('localhost', 'vereficentros', 'bAllenA6##6')) {
