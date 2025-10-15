@@ -1055,6 +1055,8 @@ if($_POST['ajax']==71){
 }
 
 if ($_POST['ajax']==72){
+	echo '1';
+	exit();
 	$res = mysql_query("SELECT cve FROM cobro_engomado WHERE plaza='{$_POST['plazausuario']}' AND tipo_venta=0 AND tipo_pago=10 AND vale_pago_anticipado='{$_POST['vale_pago_anticipado']}' AND estatus!='C'");
 	if($row = mysql_fetch_array($res)){
 		echo '2';
