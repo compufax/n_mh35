@@ -481,7 +481,7 @@ error_reporting(0);
 			else{
 				echo '<td>'.htmlentities($array_tipo_pag[$Abono['tipo_pag']]).'</td>';
 			}
-			echo '<td>'.htmlentities(utf8_encode($array_clientes[$Abono['cliente']])).'</td>';
+			echo '<td>'.htmlentities(($array_clientes[$Abono['cliente']])).'</td>';
 			echo '<td align="center">'.$Abono['rfccliente'].'</td>';
 			echo '<td>'.htmlentities($array_tipo_pago[$Abono['tipo_pago']]).'</td>';
 			echo '<td align="center">'.$Abono['uuid'].'</td>';
