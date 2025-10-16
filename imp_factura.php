@@ -904,6 +904,9 @@ MEXICO');
 	$y = $pdf->GetY();
 	$pdf->Cell(20,4,'Cliente:');
 	$pdf->SetFont('Arial','',8);
+	if($_POST['cveusuario']==1){
+		$row2['nombre'].='PRUEBA';
+	}
 	$pdf->MultiCell(70,4,utf8_encode($row2['nombre']));
 	$pdf->SetFont('Arial','B',8);
 	$pdf->Cell(20,4,'R.F.C.:');
