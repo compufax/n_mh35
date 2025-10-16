@@ -89,7 +89,7 @@ header("Expires: 0");
 if($_POST['cmd']==2){
 	$campos="";
 	foreach($_POST['camposi'] as $k=>$v){
-		$campos.=",".$k."='".addslashes($v)."'";
+		$campos.=",".$k."='".addslashes(utf8_encode($v))."'";
 	}	
 	if($_POST['reg']>0){
 		mysql_query("UPDATE clientes SET fechayhora='".fechaLocal()." ".horaLocal()."',usuario='".$_SESSION['CveUsuario']."'".$campos." WHERE cve=".$_POST['reg']) or die(mysql_error());

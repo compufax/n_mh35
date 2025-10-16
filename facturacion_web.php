@@ -922,7 +922,7 @@ if($_POST['cmd']==3){
 if($_POST['cmd']==2){
 	foreach($_POST as $k=>$v){
 		if($k!='plaza' && $k!='placat' && $k!='ticket'){
-			$_POST[$k] = mb_strtoupper(($v));
+			$_POST[$k] = mb_strtoupper(utf8_encode($v));
 		}
 	}
 	$plaza = $_POST['plaza'][0];
