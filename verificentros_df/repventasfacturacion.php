@@ -48,7 +48,7 @@ if($_POST['ajax']==3){
 
 if($_POST['ajax']==2){
 	include("imp_factura.php");
-	require_once('../PHPMailer-master/PHPMailerAutoload.php');
+	//require_once('../PHPMailer-master/PHPMailerAutoload.php');
 	$_POST['tipo_serie'] = 0;
 	$resplaza = mysql_query("SELECT * FROM plazas WHERE cve='".$_POST['plaza']."'");
 	$rowplaza = mysql_fetch_array($resplaza);
@@ -169,7 +169,7 @@ if($_POST['ajax']==2){
 								//file_put_contents($dir.$filename.'.pdf', $strpdf);
 								$zip->close();		
 								generaFacturaPdf($_POST['plaza'],$cvefact);
-								if($emailenvio!=""){
+								if($emailenvio!="" && 1==2){
 									//$mail = new PHPMailer();
 									//$mail->Host = "localhost";
 									$mail = new PHPMailer;		
