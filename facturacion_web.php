@@ -1290,9 +1290,9 @@ if($_POST['cmd']==10){
 				<!--<p><b>Soporte para facturación:</b><br><span class="text-info">Soporte Morelos: verimorelos@gmail.com</span><p>
 				<p>Enviar en Asunto folio de ticket, placa y número y/o nombre del centro de verificación</p>-->
 				<div class="popup" onclick="myFunction()" role="alert">
-				<span class="popuptext" id="myPopup">manda  una foto de tu ticket,datos fiscales y si gustas teléfono  para poderte apoyar soporte@facturacionweb.net</span>
+				<span class="popuptext" id="myPopup">manda  una foto de tu ticket,datos fiscales y si gustas teléfono  para poderte apoyar soporte@facturacionweb.net.</span>
 				</div>
-				<p><h2 style="font-size:17px">manda  una foto de tu ticket,datos fiscales y si gustas teléfono  para poderte apoyar soporte@facturacionweb.net</h2></p>
+				<p><h2 style="font-size:17px">manda  una foto de tu ticket,datos fiscales y si gustas teléfono  para poderte apoyar soporte@facturacionweb.net..</h2></p>
 				<p><h2>Se recomienda el uso de Google Chrome <img src="images/chrome.png" width="40px" height="40px"> o Mozilla Firefox<img src="images/firefox.png" width="40px" height="40px"></h2></p>
 				<p style="font-size:12px"><a  target="_blank" href="/facturacion/Aviso/Aviso_De_Privacidad.pdf">*Aviso de Privacidad</a></p>
 			
@@ -1413,9 +1413,9 @@ if($_POST['cmd'] == 0){
 				<!--<p><b>Soporte para facturación:</b><br><span class="text-info">Soporte Morelos: verimorelos@gmail.com</span><p>
 				<p>Enviar en Asunto folio de ticket, placa y número y/o nombre del centro de verificación</p>-->
 				<div class="popup" onclick="myFunction()" role="alert">
-				<span class="popuptext" id="myPopup">manda  una foto de tu ticket,datos fiscales y si gustas teléfono  para poderte apoyar soporte@facturacionweb.net</span>
+				<span class="popuptext" id="myPopup">manda  una foto de tu ticket,datos fiscales y si gustas teléfono  para poderte apoyar soporte@facturacionweb.net..</span>
 				</div>
-				<p><h2 style="font-size:17px">manda  una foto de tu ticket,datos fiscales y si gustas teléfono  para poderte apoyar soporte@facturacionweb.net</h2></p>
+				<p><h2 style="font-size:17px">manda  una foto de tu ticket,datos fiscales y si gustas teléfono  para poderte apoyar soporte@facturacionweb.net....</h2></p>
 				<p><h2>Se recomienda el uso de Google Chrome <img src="images/chrome.png" width="40px" height="40px"> o Mozilla Firefox<img src="images/firefox.png" width="40px" height="40px"></h2></p>
 				<p style="font-size:12px"><a  target="_blank" href="/facturacion/Aviso/Aviso_De_Privacidad.pdf">*Aviso de Privacidad</a></p>
 			
